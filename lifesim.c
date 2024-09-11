@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 17:53:03 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:29:59 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,19 @@ void	update_mover(t_lifeform *mover)
 void	render_lifeform(t_data *data)
 {
 	int		i;
+	int		j;
 	t_lifeform	*tmp;
 
 	i = 0;
 	while (i < NUMBER_OF_LIFEFORM)
 	{
 		tmp = (data->lsim->life) + i;
-		circlebres((int)tmp->ppos.x, (int)tmp->ppos.y, 3, data, 0x000000);
-		circlebres((int)tmp->pos.x, (int)tmp->pos.y, 3, data, tmp->color);
+		j = 4;
+		while (--j >= 0)
+		{
+			circlebres((int)tmp->ppos.x, (int)tmp->ppos.y, j, data, 0x000000);
+			circlebres((int)tmp->pos.x, (int)tmp->pos.y, j, data, tmp->color);
+		}
 		i++;
 	}
 }
@@ -138,13 +143,13 @@ void	process_velocity(t_data *data)
 		tmp->ppos.y = tmp->pos.y;
 		update_mover(tmp);
 		if (tmp->pos.x > WINDX)
-			tmp->pos.x = WINDX;
-		if (tmp->pos.y > WINDY)
-			tmp->pos.y = WINDY;
-		if (tmp->pos.x < 0)
 			tmp->pos.x = 0;
-		if (tmp->pos.y < 0)
+		if (tmp->pos.y > WINDY)
 			tmp->pos.y = 0;
+		if (tmp->pos.x < 0)
+			tmp->pos.x = WINDX;
+		if (tmp->pos.y < 0)
+			tmp->pos.y = WINDY;
 		i++;
 	}
 }

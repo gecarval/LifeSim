@@ -29,13 +29,13 @@
 # define WINDY	(int)900
 # define ESC	65307 
 
-# define RED	0xFF0000
-# define GREEN	0x00FF00
-# define BLUE	0x0000FF
-# define YELLOW	0xDD5555
+# define RED	0xCC0000
+# define GREEN	0x00CC00
+# define BLUE	0x0000CC
+# define YELLOW	0xCCCC00
 
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)10
+#define NUMBER_OF_LIFEFORM  (int)1250
 
 // STRUCTS
 typedef struct s_objinf
@@ -98,6 +98,34 @@ typedef struct s_data
 	int		mposy;
 	int		timing;
 }	t_data;
+
+typedef struct s_rectangle
+{
+	float_t	x;
+	float_t	y;
+	float_t	w;
+	float_t	h;
+}	t_rectangle;
+
+typedef struct s_point
+{
+	float_t	x;
+	float_t	y;
+	t_lifeform *mover;
+} t_point;
+
+typedef struct s_quadtree
+{
+	t_rectangle		boundary;
+	int			capacity;
+	t_point**		points;
+	int			pointcount;
+	int			divided;
+	struct s_quadtree*	northeast;
+	struct s_quadtree*	northwest;
+	struct s_quadtree*	southeast;
+	struct s_quadtree*	southwest;
+}	t_quadtree;
 
 // WATER MARKS
 void	water_mark(t_data *data);
