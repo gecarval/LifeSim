@@ -35,7 +35,7 @@
 # define YELLOW	0xCCCC00
 
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)1250
+#define NUMBER_OF_LIFEFORM  (int)5000
 
 // STRUCTS
 typedef struct s_objinf
@@ -99,32 +99,44 @@ typedef struct s_data
 	int		timing;
 }	t_data;
 
+typedef struct s_circle
+{
+    float_t	x;
+    float_t	y;
+    float_t	r;
+    float_t	rsqrt;
+} t_circle;
+
 typedef struct s_rectangle
 {
 	float_t	x;
 	float_t	y;
 	float_t	w;
 	float_t	h;
+	float_t	left;
+	float_t	right;
+	float_t	top;
+	float_t	bottom;
 }	t_rectangle;
 
 typedef struct s_point
 {
-	float_t	x;
-	float_t	y;
-	t_lifeform *mover;
+	float_t		x;
+	float_t		y;
+	t_lifeform	*life;
 } t_point;
 
 typedef struct s_quadtree
 {
 	t_rectangle		boundary;
+	t_point			**points;
 	int			capacity;
-	t_point**		points;
 	int			pointcount;
 	int			divided;
-	struct s_quadtree*	northeast;
-	struct s_quadtree*	northwest;
-	struct s_quadtree*	southeast;
-	struct s_quadtree*	southwest;
+	struct s_quadtree	*northeast;
+	struct s_quadtree	*northwest;
+	struct s_quadtree	*southeast;
+	struct s_quadtree	*southwest;
 }	t_quadtree;
 
 // WATER MARKS
@@ -146,6 +158,14 @@ void	life_sim(t_data *data);
 // DELTAS
 void	defdel(t_delta *a, float_t ini, float_t fin);
 t_delta	revdel(t_delta a);
+// VECTORS
+t_vector	create_vector(float_t x, float_t y);
+t_vector	vector_sub(t_vector v1, t_vector v2);
+t_vector	vectordiv(t_vector v, float_t scalar);
+t_vector	vector_setmag(t_vector v, float_t magnitude);
+float_t		vector_magsq(t_vector v);
+float_t		constrain(float_t val, float_t min, float_t max);
+void		vectoradd(t_vector *v1, t_vector v2);
 // PROCESS CALLS
 void	ft_free_tensor(char ***z);
 void	ft_free_matrix(char **vec);
