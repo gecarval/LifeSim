@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 16:28:53 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:04:30 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	create_lsim(t_data *data)
 		tmp->vel.y = 0;
 		tmp->acel.x = 0;
 		tmp->acel.y = 0;
-		tmp->mass = 500;
+		tmp->mass = 10;
 		if (rand() % 2)
 			tmp->vel.x *= -1;
 		if (rand() % 2)
