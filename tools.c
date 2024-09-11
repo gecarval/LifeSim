@@ -6,11 +6,75 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 13:14:29 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:46:58 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./includes/renderer.h"
+
+// HOOKS
+int	mouse_released(int key, t_data *data)
+{
+	if (key == 1)
+		data->click_hold = 0;
+	ft_printf("%d\n", key);
+	return (0);
+}
+
+int	mouse_click(int key, int x, int y, t_data *data)
+{
+	(void)x;
+	(void)y;
+	if (key == 1)
+		data->click_hold = 1;
+	if (key == 3)
+		data->click_hold = 0;
+	return (0);
+}
+
+int	mlx_anim(t_data *data)
+{
+	int	i;
+
+	if (data->anilsim == 1)
+	{
+		water_mark(data);
+		life_sim(data);
+		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
+		i = 0;
+		while (i < data->timing)
+			i++;
+	}
+	return (0);
+}
+
+int	mlx_cooked(int key, t_data *data)
+{
+	if (key == '1')
+	{
+		render_background(data, 0x000000);
+		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
+		data->anilsim *= -1;
+	}
+	if (key == ESC)
+		exit_data(data, 0);
+	if (key == ']')
+		data->timing += 10000000;
+	if (key == '[')
+		if (data->timing > 9999999)
+			data->timing -= 10000000;
+	if (key == ' ')
+	{
+		render_background(data, 0x000000);
+		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
+		water_mark(data);
+	}
+	if (key == 65362)
+		data->anispeed += 0.0025;
+	if (key == 65364)
+		data->anispeed -= 0.0025;
+	return (0);
+}
 
 // GRAPH
 void	pixel_to_img(int x, int y, t_data *data, int color)
@@ -53,67 +117,6 @@ void	render_background(t_data *data, int color)
 		while (++y < WINDY)
 			pixel_to_img(x, y, data, color);
 	}
-}
-
-// HOOKS
-int	mouse_released(int key, t_data *data)
-{
-	if (key == 1)
-		data->click_hold = 0;
-	ft_printf("%d\n", key);
-	return (0);
-}
-
-int	mouse_click(int key, int x, int y, t_data *data)
-{
-	(void)x;
-	(void)y;
-	if (key == 1)
-		data->click_hold = 1;
-	if (key == 3)
-		data->click_hold = 0;
-	return (0);
-}
-
-int	mlx_anim(t_data *data)
-{
-	int	i;
-
-	if (data->anilsim == 1)
-	{
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		i = 0;
-		while (i < data->timing)
-			i++;
-	}
-	return (0);
-}
-
-int	mlx_cooked(int key, t_data *data)
-{
-	if (key == '1')
-	{
-		render_background(data, 0x000000);
-		data->anilsim *= -1;
-	}
-	if (key == ESC)
-		exit_data(data, 0);
-	if (key == ']')
-		data->timing += 10000000;
-	if (key == '[')
-		if (data->timing > 9999999)
-			data->timing -= 10000000;
-	if (key == ' ')
-	{
-		render_background(data, 0x000000);
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		water_mark(data);
-	}
-	if (key == 65362)
-		data->anispeed += 0.0025;
-	if (key == 65364)
-		data->anispeed -= 0.0025;
-	return (0);
 }
 
 // GET DIM

@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 16:57:08 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 13:03:26 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:30:15 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	main(void)
 	if (!data)
 		display_error(data, "malloc error\n");
 	ft_init_program(data);
+	create_lsim(data);
 	data->anilsim = -1;
 	data->anispeed = 0.01;
 	data->click_hold = 0;
