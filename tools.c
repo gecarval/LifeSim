@@ -6,11 +6,115 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 12:39:52 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:14:29 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./includes/renderer.h"
+
+// GRAPH
+void	pixel_to_img(int x, int y, t_data *data, int color)
+{
+	char	*pixel;
+
+	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
+		return ;
+	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
+	*(int *)pixel = color;
+}
+
+void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color)
+{
+	char	*pixel;
+
+	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
+		return ;
+	pixel = data->img->img_px + (int)y * data->img->llen + (int)x * (data->img->bpp / 8);
+	*(int *)pixel = color;
+}
+
+void	water_mark(t_data *data)
+{
+	mlx_string_put(data->ini, data->win,
+		15, 15, 120000, "renders by gecarval");
+	mlx_string_put(data->ini, data->win,
+		15, 60, 120000, "Press 1 for Life Sim");
+}
+
+void	render_background(t_data *data, int color)
+{
+	int	x;
+	int	y;
+
+	x = -1;
+	while (++x < WINDX)
+	{
+		y = -1;
+		while (++y < WINDY)
+			pixel_to_img(x, y, data, color);
+	}
+}
+
+// HOOKS
+int	mouse_released(int key, t_data *data)
+{
+	if (key == 1)
+		data->click_hold = 0;
+	ft_printf("%d\n", key);
+	return (0);
+}
+
+int	mouse_click(int key, int x, int y, t_data *data)
+{
+	(void)x;
+	(void)y;
+	if (key == 1)
+		data->click_hold = 1;
+	if (key == 3)
+		data->click_hold = 0;
+	return (0);
+}
+
+int	mlx_anim(t_data *data)
+{
+	int	i;
+
+	if (data->anilsim == 1)
+	{
+		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
+		i = 0;
+		while (i < data->timing)
+			i++;
+	}
+	return (0);
+}
+
+int	mlx_cooked(int key, t_data *data)
+{
+	if (key == '1')
+	{
+		render_background(data, 0x000000);
+		data->anilsim *= -1;
+	}
+	if (key == ESC)
+		exit_data(data, 0);
+	if (key == ']')
+		data->timing += 10000000;
+	if (key == '[')
+		if (data->timing > 9999999)
+			data->timing -= 10000000;
+	if (key == ' ')
+	{
+		render_background(data, 0x000000);
+		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
+		water_mark(data);
+	}
+	if (key == 65362)
+		data->anispeed += 0.0025;
+	if (key == 65364)
+		data->anispeed -= 0.0025;
+	return (0);
+}
 
 // GET DIM
 int	get_x_size(const char *s)
@@ -71,221 +175,7 @@ void	ft_free_tensor(char ***z)
 	free(z);
 }
 
-// GRAPH
-void	pixel_to_img(int x, int y, t_data *data, int color)
-{
-	char	*pixel;
-
-	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
-		return ;
-	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
-	*(int *)pixel = color;
-}
-
-void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color)
-{
-	char	*pixel;
-
-	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
-		return ;
-	pixel = data->img->img_px + (int)y * data->img->llen + (int)x * (data->img->bpp / 8);
-	*(int *)pixel = color;
-}
-
-void	water_mark(t_data *data)
-{
-	mlx_string_put(data->ini, data->win,
-		15, 15, 120000, "renders by gecarval");
-	mlx_string_put(data->ini, data->win,
-		15, 30, 120000, "Press 1 for Cube");
-	mlx_string_put(data->ini, data->win,
-		15, 45, 120000, "Press 2 for Fluid Sim");
-	mlx_string_put(data->ini, data->win,
-		15, 60, 120000, "Press 3 for Life Sim");
-}
-
-void	controls_mark(t_data *data)
-{
-	mlx_string_put(data->ini, data->win, 15, 15, 0xFFFFFF, "'LMB'=Brush_On ; 'RMB'=Brush_Off");
-	mlx_string_put(data->ini, data->win, 15, 30, 0xFFFFFF, "','=Decrease_Brush ; '.'=Increase_Brush");
-	mlx_string_put(data->ini, data->win, 15, 45, 0xFFFFFF, "Q=Empty ; W=Sand ; E=WetSand ; R=Stone ; T=GunPowder ; Y=Soap ; U=Wood ; I=Iron ; O=Rust ; P=Glass");
-	mlx_string_put(data->ini, data->win, 15, 60, 0xFFFFFF, "A=Water ; S=Lava ; D=Oil ; F=Acid ; G=Fly");
-	mlx_string_put(data->ini, data->win, 15, 75, 0xFFFFFF, "Z=Fire ; X=Oxygen ; C=Hidrogen ; V=Propane ; B=Steam ; N=Missil");
-}
-
-void	render_background(t_data *data, int color)
-{
-	int	x;
-	int	y;
-
-	x = -1;
-	while (++x < WINDX)
-	{
-		y = -1;
-		while (++y < WINDY)
-			pixel_to_img(x, y, data, color);
-	}
-}
-
-// HOOKS
-int	mouse_released(int key, t_data *data)
-{
-	if (key == 1)
-		data->click_hold = 0;
-	ft_printf("%d\n", key);
-	return (0);
-}
-
-int	mouse_click(int key, int x, int y, t_data *data)
-{
-	(void)x;
-	(void)y;
-	if (key == 1)
-		data->click_hold = 1;
-	if (key == 3)
-		data->click_hold = 0;
-	return (0);
-}
-
-int	mlx_anim(t_data *data)
-{
-	int	i;
-
-	if (data->anicub == 1)
-	{
-		render_background(data, 0x000000);
-		draw_vertices(data, data->iso);
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		water_mark(data);
-		data->iso += data->anispeed;
-		if (data->iso > 6.28)
-			data->iso = 0.0;
-		i = 0;
-		while (i < data->timing)
-			i++;
-	}
-	if (data->anifsim == 1)
-	{
-		fluidsim_start(data);
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		controls_mark(data);
-		i = 0;
-		while (i < data->timing)
-			i++;
-	}
-	if (data->anilsim == 1)
-	{
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		i = 0;
-		while (i < data->timing)
-			i++;
-	}
-	if (data->click_hold == 1)
-	{
-		mlx_mouse_get_pos(data->ini, data->win, &data->mposx, &data->mposy);
-		put_mat(data->mposx / 2, data->mposy / 2, data);
-//		circle_putmat(data->mposx / 2, data->mposy / 2, data->brush_size, data);
-	}
-	return (0);
-}
-
-int	mlx_cooked(int key, t_data *data)
-{
-	if (key == 'q')
-		data->click_fill = MAT_ID_EMPTY;
-	if (key == 'w')
-		data->click_fill = MAT_ID_SAND;
-	if (key == 'e')
-		data->click_fill = MAT_ID_WETSAND;
-	if (key == 'r')
-		data->click_fill = MAT_ID_STONE;
-	if (key == 't')
-		data->click_fill = MAT_ID_GUNPOWDER;
-	if (key == 'y')
-		data->click_fill = MAT_ID_SOAP;
-	if (key == 'u')
-		data->click_fill = MAT_ID_WOOD;
-	if (key == 'i')
-		data->click_fill = MAT_ID_IRON;
-	if (key == 'o')
-		data->click_fill = MAT_ID_RUST;
-	if (key == 'p')
-		data->click_fill = MAT_ID_GLASS;
-	if (key == 'a')
-		data->click_fill = MAT_ID_WATER;
-	if (key == 's')
-		data->click_fill = MAT_ID_LAVA;
-	if (key == 'd')
-		data->click_fill = MAT_ID_OIL;
-	if (key == 'f')
-		data->click_fill = MAT_ID_ACID;
-	if (key == 'g')
-		data->click_fill = MAT_ID_FLY;
-	if (key == 'z')
-		data->click_fill = MAT_ID_FIRE;
-	if (key == 'x')
-		data->click_fill = MAT_ID_OXYGEN;
-	if (key == 'c')
-		data->click_fill = MAT_ID_HIDROGEN;
-	if (key == 'v')
-		data->click_fill = MAT_ID_PROPANE;
-	if (key == 'b')
-		data->click_fill = MAT_ID_STEAM;
-	if (key == 'n')
-		data->click_fill = MAT_ID_MISSILE;
-	if (key == '.')
-		data->brush_size += 1;
-	if (key == ',')
-		if (data->brush_size > 0)
-			data->brush_size -= 1;
-	if (key == '1')
-	{
-		render_background(data, 0x000000);
-		data->anicub *= -1;
-	}
-	if (key == '2')
-	{
-		render_fluidmap(data);
-		data->anifsim *= -1;
-	}
-	if (key == '3')
-	{
-		render_background(data, 0x000000);
-		data->anilsim *= -1;
-	}
-	if (key == ESC)
-		exit_data(data, 0);
-	if (key == ']')
-		data->timing += 10000000;
-	if (key == '[')
-		if (data->timing > 9999999)
-			data->timing -= 10000000;
-	if (key == ' ')
-	{
-		render_background(data, 0x000000);
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
-		water_mark(data);
-	}
-	if (key == 65362)
-		data->anispeed += 0.0025;
-	if (key == 65364)
-		data->anispeed -= 0.0025;
-	return (0);
-}
-
 // DELTAS
-t_pt	*pt_dup(t_pt *a)
-{
-	t_pt	*b;
-
-	b = (t_pt *)malloc(sizeof(t_pt));
-	b->x = a->x;
-	b->y = a->y;
-	b->z = a->z;
-	b->color = a->color;
-	return (b);
-}
-
 void	defdel(t_delta *a, float_t ini, float_t fin)
 {
 	a->ini = ini;
