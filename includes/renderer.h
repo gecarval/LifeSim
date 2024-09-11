@@ -29,8 +29,13 @@
 # define WINDY	(int)900
 # define ESC	65307 
 
+# define RED	0xFF0000
+# define GREEN	0x00FF00
+# define BLUE	0x0000FF
+# define YELLOW	0xDD5555
+
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)2
+#define NUMBER_OF_LIFEFORM  (int)10
 
 // STRUCTS
 typedef struct s_objinf
@@ -48,14 +53,6 @@ typedef struct s_delta
 	float_t	fin;
 }	t_delta;
 
-typedef struct s_lifeform
-{
-	float_t	x;
-	float_t	y;
-	int	id;
-	int	color;
-}	t_lifeform;
-
 typedef struct s_img
 {
 	void	*img_ptr;
@@ -64,6 +61,23 @@ typedef struct s_img
 	int		llen;
 	int		bpp;
 }	t_img;
+
+typedef struct s_vector
+{
+	float_t	x;
+	float_t	y;
+}	t_vector;
+
+typedef struct s_lifeform
+{
+	t_vector	ppos;
+	t_vector	pos;
+	t_vector	vel;
+	t_vector	acel;
+	int		id;
+	int		color;
+	int		mass;
+}	t_lifeform;
 
 typedef struct s_lifesim
 {
@@ -99,6 +113,8 @@ void	drawcircle(int xc, int yc, int x, int y, t_data *data, int color);
 void	circlebres(int xc, int yc, int r, t_data *data, int color);
 // MAP READ
 void	create_lsim(t_data *data);
+// LIFE SIM
+void	life_sim(t_data *data);
 // DELTAS
 void	defdel(t_delta *a, float_t ini, float_t fin);
 t_delta	revdel(t_delta a);
