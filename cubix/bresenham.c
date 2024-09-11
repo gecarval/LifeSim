@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:53:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/10 20:42:11 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:15:44 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	draw_line(t_delta x, t_delta y, t_data *data, int color)
 	}
 }
 
-void	drawCircle(int xc, int yc, int x, int y, t_data *data, int color) 
+void	drawcircle(int xc, int yc, int x, int y, t_data *data, int color) 
 {
 	pixel_to_img(xc + x, yc + y, data, color); 
 	pixel_to_img(xc - x, yc + y, data, color); 
@@ -96,11 +96,11 @@ void	drawCircle(int xc, int yc, int x, int y, t_data *data, int color)
 	pixel_to_img(xc - y, yc - x, data, color); 
 }
 
-void	circleBres(int xc, int yc, int r, t_data *data, int color) 
+void	circlebres(int xc, int yc, int r, t_data *data, int color) 
 {
 	int x = 0, y = r; 
 	int d = 3 - 2 * r; 
-	drawCircle(xc, yc, x, y, data, color); 
+	drawcircle(xc, yc, x, y, data, color); 
 	while (y >= x) 
 	{
 		x++; 
@@ -111,7 +111,7 @@ void	circleBres(int xc, int yc, int r, t_data *data, int color)
 		} 
 		else
 			d = d + 4 * x + 6; 
-		drawCircle(xc, yc, x, y, data, color); 
+		drawcircle(xc, yc, x, y, data, color); 
 	} 
 } 
 

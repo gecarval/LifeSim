@@ -6,7 +6,7 @@
 #    By: gecarval <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/21 17:12:20 by gecarval          #+#    #+#              #
-#    Updated: 2024/09/10 20:42:01 by gecarval         ###   ########.fr        #
+#    Updated: 2024/09/11 13:09:19 by gecarval         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFLAGS = -Wall -Wextra -Werror
 LIBFT = libft.a
 MINILIBX = mlx_Linux.a
 INCS = -I./includes -I./libft -L./libft ./libft/$(LIBFT) -I./minilibx-linux -lmlx_Linux -L./minilibx-linux -lmlx -L/usr/include/../lib -lXext -lX11 -lm
-SRCS = ./cubix/math_del.c ./cubix/bresenham.c ./cubix/cubix.c ./fluidsim/part_call.c ./fluidsim/part_emul.c ./fluidsim/part_emul_solid.c ./fluidsim/part_emul_liquid.c ./fluidsim/part_emul_gas.c ./fluidsim/part_emul_logic.c ./fluidsim/fluidsim.c ./calls.c ./reads.c ./tools.c ./main.c
+SRCS = ./cubix/bresenham.c ./calls.c ./reads.c ./tools.c ./main.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -drf
 

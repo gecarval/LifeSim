@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 12:37:16 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:04:27 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,10 @@ int	exit_data(t_data *data, int fd)
 		mlx_destroy_image(data->ini, data->img->img_ptr);
 	if (data != NULL && data->img != NULL)
 		free(data->img);
-	if (data != NULL && data->fsim && data->fsim->map != NULL)
-		ft_free_matrix(data->fsim->map);
-	if (data != NULL && data->fsim != NULL)
-		free(data->fsim);
 	if (data != NULL && data->lsim != NULL && data->lsim->life != NULL)
 		free(data->lsim->life);
 	if (data != NULL && data->lsim != NULL)
 		free(data->lsim);
-	if (data != NULL && data->map != NULL && data->map->rotx != NULL)
-		free(data->map->rotx);
-	if (data != NULL && data->map != NULL && data->map->roty != NULL)
-		free(data->map->roty);
-	if (data != NULL && data->map != NULL && data->map->rotz != NULL)
-		free(data->map->rotz);
-	if (data != NULL && data->map != NULL && data->map->prj != NULL)
-		free(data->map->prj);
-	if (data != NULL && data->map != NULL && data->map->mapz != NULL)
-		free(data->map->mapz);
-	if (data != NULL && data->map != NULL && data->map->parsed_file != NULL)
-		ft_free_matrix(data->map->parsed_file);
-	if (data != NULL && data->map != NULL)
-		free(data->map);
-	if (data != NULL && data->original_map != NULL && data->original_map->mapz != NULL)
-		free(data->original_map->mapz);
-	if (data != NULL && data->original_map != NULL)
-		free(data->original_map);
 	if (data != NULL && data->win != NULL)
 		mlx_clear_window(data->ini, data->win);
 	if (data != NULL && data->win != NULL)
@@ -72,16 +50,6 @@ void	ft_init_program(t_data *data)
 	data->win = mlx_new_window(data->ini, WINDX, WINDY, "render");
 	if (!data->win)
 		display_error(data, "window error\n");
-	data->map = (t_map *)malloc(sizeof(t_map));
-	if (!data->map)
-		display_error(data, "map malloc error\n");
-	data->map->parsed_file = NULL;
-	data->map->mapz = NULL;
-	data->cam = NULL;
-	data->fsim = (t_fluidsim *)malloc(sizeof(t_fluidsim));
-	if (!data->fsim)
-		display_error(data, "fluidsim malloc error\n");
-	data->fsim->map = NULL;
 	data->lsim = (t_lifesim *)malloc(sizeof(t_lifesim));
 	if (!data->lsim)
 		display_error(data, "lifesim malloc error\n");
