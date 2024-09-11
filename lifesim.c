@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 16:47:40 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 17:53:03 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,7 @@
 
 t_vector	create_vector(float_t x, float_t y)
 {
-	t_vector v;
-
-	v = {x, y};
-	return (v);
+	return (t_vector){x, y};
 }
 
 t_vector	vector_sub(t_vector v1, t_vector v2)
