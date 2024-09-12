@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 13:46:58 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/12 14:43:40 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	pixel_to_img(int x, int y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
+	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
 		return ;
 	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
 	*(int *)pixel = color;
@@ -156,7 +156,7 @@ int	get_y_size(const char *s)
 }
 
 // FREE
-void	ft_free_matrix(char **vec)
+void	ft_free_matrix(void **vec)
 {
 	int	i;
 
@@ -166,7 +166,7 @@ void	ft_free_matrix(char **vec)
 	free(vec);
 }
 
-void	ft_free_tensor(char ***z)
+void	ft_free_tensor(void ***z)
 {
 	int	i;
 

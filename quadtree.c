@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:34:34 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 20:15:38 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/11 20:56:15 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,3 +134,5 @@ int	cirintersects(t_circle *c, t_rectangle *range)
 		return (1);
 	return (edges <= c->rsqrt);
 }
+
+

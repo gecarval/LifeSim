@@ -35,7 +35,7 @@
 # define YELLOW	0xCCCC00
 
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)5000
+#define NUMBER_OF_LIFEFORM  (int)2000
 
 // STRUCTS
 typedef struct s_objinf
@@ -83,6 +83,7 @@ typedef struct s_lifesim
 {
 	t_lifeform	*life;
 	float_t		g;
+	float_t		**rules;
 }	t_lifesim;
 
 typedef struct s_data
@@ -167,8 +168,8 @@ float_t		vector_magsq(t_vector v);
 float_t		constrain(float_t val, float_t min, float_t max);
 void		vectoradd(t_vector *v1, t_vector v2);
 // PROCESS CALLS
-void	ft_free_tensor(char ***z);
-void	ft_free_matrix(char **vec);
+void	ft_free_tensor(void ***z);
+void	ft_free_matrix(void **vec);
 void	display_error(t_data *data, char *msg);
 void	ft_init_program(t_data *data);
 void	create_tensor(t_data *data);
