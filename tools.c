@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/12 14:43:40 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/12 20:42:12 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ int	mlx_cooked(int key, t_data *data)
 {
 	if (key == '1')
 	{
-		render_background(data, 0x000000);
-		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
 		data->anilsim *= -1;
 	}
 	if (key == ESC)
@@ -81,7 +79,7 @@ void	pixel_to_img(int x, int y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
+	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
 		return ;
 	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
 	*(int *)pixel = color;
@@ -91,7 +89,7 @@ void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
+	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
 		return ;
 	pixel = data->img->img_px + (int)y * data->img->llen + (int)x * (data->img->bpp / 8);
 	*(int *)pixel = color;

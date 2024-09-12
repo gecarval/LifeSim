@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/12 15:29:37 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/12 21:04:47 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,17 +92,21 @@ void	create_lsim(t_data *data)
 	data->lsim->rules[3][0] = 1;
 	data->lsim->rules[3][1] = -1;
 	data->lsim->rules[3][2] = -1;
-	data->lsim->rules[3][3] = 1;
-	data->lsim->rules[i] = NULL;*/
+	data->lsim->rules[3][3] = 1;*/
+	data->lsim->rules[i] = NULL;
 	print_rules(data);
 	i = -1;
 	while (++i < NUMBER_OF_LIFEFORM)
 	{
 		tmp = (data->lsim->life) + i;
-		tmp->pos = (t_vector){rand() % WINDX, rand() % WINDY};
-		tmp->vel = (t_vector){rand() % 2, rand() % 2};
-		tmp->acel = (t_vector){0, 0};
+		tmp->pos.x = rand() % WINDX;
+		tmp->pos.y = rand() % WINDY;
+		tmp->vel.x = rand() % 2;
+		tmp->vel.y = rand() % 2;
+		tmp->acel.x = 0;
+		tmp->acel.y = 0;
 		tmp->mass = 20;
+		tmp->r = RADIUS;
 		if (rand() % 2)
 			tmp->vel.x *= -1;
 		if (rand() % 2)
@@ -117,4 +121,6 @@ void	create_lsim(t_data *data)
 		if (tmp->id == 3)
 			tmp->color = YELLOW;
 	}
+	tmp = (data->lsim->life) + i;
+	tmp = NULL;
 }

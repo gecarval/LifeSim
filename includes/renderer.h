@@ -36,6 +36,7 @@
 
 // LIFE SIM
 #define NUMBER_OF_LIFEFORM  (int)2000
+#define RADIUS  (int)4
 
 // STRUCTS
 typedef struct s_objinf
@@ -77,6 +78,7 @@ typedef struct s_lifeform
 	int		id;
 	int		color;
 	int		mass;
+	int		r;
 }	t_lifeform;
 
 typedef struct s_lifesim
@@ -162,11 +164,15 @@ t_delta	revdel(t_delta a);
 // VECTORS
 t_vector	create_vector(float_t x, float_t y);
 t_vector	vector_sub(t_vector v1, t_vector v2);
+t_vector	vectordot(t_vector v1, t_vector v2);
+t_vector	vectormult(t_vector v, float_t scalar);
 t_vector	vectordiv(t_vector v, float_t scalar);
 t_vector	vector_setmag(t_vector v, float_t magnitude);
+float_t		vector_magsqsqrt(t_vector v);
 float_t		vector_magsq(t_vector v);
 float_t		constrain(float_t val, float_t min, float_t max);
 void		vectoradd(t_vector *v1, t_vector v2);
+void		setmag(t_vector *v, float_t mag);
 // PROCESS CALLS
 void	ft_free_tensor(void ***z);
 void	ft_free_matrix(void **vec);

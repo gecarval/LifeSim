@@ -6,13 +6,13 @@
 #    By: gecarval <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/21 17:12:20 by gecarval          #+#    #+#              #
-#    Updated: 2024/09/11 19:34:25 by gecarval         ###   ########.fr        #
+#    Updated: 2024/09/12 20:45:46 by gecarval         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = render
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror
 LIBFT = libft.a
 MINILIBX = mlx_Linux.a
 INCS = -I./includes -I./libft -L./libft ./libft/$(LIBFT) -I./minilibx-linux -lmlx_Linux -L./minilibx-linux -lmlx -L/usr/include/../lib -lXext -lX11 -lm
