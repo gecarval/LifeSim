@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/12 21:04:47 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 13:53:17 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,29 @@ void	print_rules(t_data *data)
 	}
 }
 
+void	set_rules(t_data *data)
+{
+	data->lsim->rules[0][0] = 1;
+	data->lsim->rules[0][1] = 1;
+	data->lsim->rules[0][2] = -1;
+	data->lsim->rules[0][3] = -1;
+
+	data->lsim->rules[1][0] = -1;
+	data->lsim->rules[1][1] = 1;
+	data->lsim->rules[1][2] = 1;
+	data->lsim->rules[1][3] = -1;
+
+	data->lsim->rules[2][0] = -1;
+	data->lsim->rules[2][1] = -1;
+	data->lsim->rules[2][2] = 1;
+	data->lsim->rules[2][3] = 1;
+
+	data->lsim->rules[3][0] = 1;
+	data->lsim->rules[3][1] = -1;
+	data->lsim->rules[3][2] = -1;
+	data->lsim->rules[3][3] = 1;
+}
+
 void	create_lsim(t_data *data)
 {
 	int		i;
@@ -74,25 +97,6 @@ void	create_lsim(t_data *data)
 			data->lsim->rules[i][j] = rand_float_t(0.0, 1.0) * sig;
 		}
 	}
-/*	data->lsim->rules[0][0] = 1;
-	data->lsim->rules[0][1] = 1;
-	data->lsim->rules[0][2] = -1;
-	data->lsim->rules[0][3] = -1;
-
-	data->lsim->rules[1][0] = -1;
-	data->lsim->rules[1][1] = 1;
-	data->lsim->rules[1][2] = 1;
-	data->lsim->rules[1][3] = -1;
-
-	data->lsim->rules[2][0] = -1;
-	data->lsim->rules[2][1] = -1;
-	data->lsim->rules[2][2] = 1;
-	data->lsim->rules[2][3] = 1;
-
-	data->lsim->rules[3][0] = 1;
-	data->lsim->rules[3][1] = -1;
-	data->lsim->rules[3][2] = -1;
-	data->lsim->rules[3][3] = 1;*/
 	data->lsim->rules[i] = NULL;
 	print_rules(data);
 	i = -1;
@@ -105,7 +109,7 @@ void	create_lsim(t_data *data)
 		tmp->vel.y = rand() % 2;
 		tmp->acel.x = 0;
 		tmp->acel.y = 0;
-		tmp->mass = 20;
+		tmp->mass = 5;
 		tmp->r = RADIUS;
 		if (rand() % 2)
 			tmp->vel.x *= -1;

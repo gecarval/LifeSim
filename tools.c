@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/12 20:42:12 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 10:38:36 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	pixel_to_img(int x, int y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
+	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
 		return ;
 	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
 	*(int *)pixel = color;
@@ -89,7 +89,7 @@ void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x <= 0 || x >= WINDX) || (y <= 0 || y >= WINDY))
+	if ((x < 0 || x >= WINDX) || (y < 0 || y >= WINDY))
 		return ;
 	pixel = data->img->img_px + (int)y * data->img->llen + (int)x * (data->img->bpp / 8);
 	*(int *)pixel = color;

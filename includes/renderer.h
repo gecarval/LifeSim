@@ -36,7 +36,8 @@
 
 // LIFE SIM
 #define NUMBER_OF_LIFEFORM  (int)2000
-#define RADIUS  (int)4
+#define RADIUS  (int)3
+#define MAX_DIST  100
 
 // STRUCTS
 typedef struct s_objinf
