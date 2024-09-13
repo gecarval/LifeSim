@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/13 19:03:33 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:08:55 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	malloc_rules(t_data *data)
 	int		sig;
 
 	i = -1;
-	data->lsim->rules = (float_t **)malloc(sizeof(float_t *) * (PART_NUM));
+	data->lsim->rules = (float_t **)malloc(sizeof(float_t *) * (PART_NUM + 1));
 	if (!data->lsim->rules)
 		display_error(data, "rules malloc error\n");
 	while (++i < PART_NUM)
