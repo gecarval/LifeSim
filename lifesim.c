@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/13 18:35:45 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 20:12:30 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,27 +131,37 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data)
 
 void	collision(t_lifeform *p1, t_lifeform *p2)
 {
-	t_vector impactvector = vector_sub(p2->pos, p1->pos);
-	float_t d = vector_magsqsqrt(impactvector);
+	t_vector	impactvector;
+	t_vector	deltava;
+	t_vector	deltavb;
+	t_vector	vdiff;
+	t_vector	dir;
+	float_t		overlap;
+	float_t		msum;
+	float_t		num;
+	float_t		den;
+	float_t		d;
 
+	impactvector = vector_sub(p2->pos, p1->pos);
+	d = vector_magsqsqrt(impactvector);
 	if (d < p1->r + p2->r)
 	{
-		float_t overlap = d - (p1->r + p2->r);
-		t_vector dir = impactvector;
+		overlap = d - (p1->r + p2->r);
+		dir = impactvector;
 		setmag(&dir, overlap * 0.5);
 		vectoradd(&(p1->pos), dir);
 		dir = vectormult(dir, -1);
 		vectoradd(&(p2->pos), dir);
 		d = p1->r + p2->r;
 		setmag(&impactvector, d);
-		float_t msum = p1->mass + p2->mass;
-		t_vector vdiff = vector_sub(p2->vel, p1->vel);
-		float_t num = vdiff.x * impactvector.x + vdiff.y * impactvector.y;
-		float_t den = msum * d * d;
-		t_vector deltava = impactvector;
+		msum = p1->mass + p2->mass;
+		vdiff = vector_sub(p2->vel, p1->vel);
+		num = vdiff.x * impactvector.x + vdiff.y * impactvector.y;
+		den = msum * d * d;
+		deltava = impactvector;
 		deltava = vectormult(deltava, 1 * p2->mass * num / den);
 		vectoradd(&(p1->vel), deltava);
-		t_vector deltavb = impactvector;
+		deltavb = impactvector;
 		deltavb = vectormult(deltavb, -1 * p1->mass * num / den);
 		vectoradd(&(p2->vel), deltavb);
 	}

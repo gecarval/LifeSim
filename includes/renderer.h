@@ -18,6 +18,7 @@
 # include <fcntl.h>
 # include <time.h>
 # include <math.h>
+# include <stdbool.h>
 # include <aio.h>
 # include <X11/X.h>
 # include <X11/keysym.h>
@@ -37,10 +38,12 @@
 # define CYAN	0x00CCCC
 
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)1000
+#define NUMBER_OF_LIFEFORM  (int)10000
 #define RADIUS  (int)3
 #define MAX_DIST  90
-#define PART_NUM 6 
+#define PART_NUM 4 
+#define DEFAULT_CAPACITY 8
+#define MAX_DEPTH 8
 
 // STRUCTS
 typedef struct s_objinf
@@ -140,7 +143,7 @@ typedef struct s_quadtree
 	t_rectangle		boundary;
 	t_point			**points;
 	int			capacity;
-	int			pointcount;
+	int			depth;
 	int			divided;
 	struct s_quadtree	*northeast;
 	struct s_quadtree	*northwest;

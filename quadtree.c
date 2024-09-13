@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:34:34 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 20:56:15 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 21:08:44 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,4 +135,42 @@ int	cirintersects(t_circle *c, t_rectangle *range)
 	return (edges <= c->rsqrt);
 }
 
+// QUADTREE HELPER FUNCTIONS
+t_quadtree	*create_quadtree(t_rectangle boundary, int capacity, int depth)
+{
+	t_quadtree *qt;
 
+	qt = (t_quadtree *)malloc(sizeof(t_quadtree));
+	qt->boundary = boundary;
+	qt->capacity = capacity;
+	qt->depth = depth;
+	qt->divided = false;
+	qt->northeast = qt->northwest = qt->southeast = qt->southwest = NULL;
+	qt->points = (t_point **)malloc(capacity * sizeof(t_point*));
+	return (qt);
+}
+
+void	subdivide_tree(t_quadtree *qt)
+{
+	t_rectangle ne = (t_rectangle){qt->boundary.x + qt->boundary.w / 2, qt->boundary.y - qt->boundary.h / 2, qt->boundary.w / 2, qt->boundary.h / 2, 0, 0, 0, 0};
+	qt->northeast = create_quadtree(ne, qt->capacity, qt->depth + 1);
+
+	t_rectangle nw = (t_rectangle){qt->boundary.x - qt->boundary.w / 2, qt->boundary.y - qt->boundary.h / 2, qt->boundary.w / 2, qt->boundary.h / 2, 0, 0, 0, 0};
+	qt->northwest = create_quadtree(nw, qt->capacity, qt->depth + 1);
+
+	t_rectangle se = (t_rectangle){qt->boundary.x + qt->boundary.w / 2, qt->boundary.y + qt->boundary.h / 2, qt->boundary.w / 2, qt->boundary.h / 2, 0, 0, 0, 0};
+	qt->southeast = create_quadtree(se, qt->capacity, qt->depth + 1);
+
+	t_rectangle sw = (t_rectangle){qt->boundary.x - qt->boundary.w / 2, qt->boundary.y + qt->boundary.h / 2, qt->boundary.w / 2, qt->boundary.h / 2, 0, 0, 0, 0};
+	qt->southwest = create_quadtree(sw, qt->capacity, qt->depth + 1);
+
+	qt->divided = true;
+}
+
+t_quadtree	*get_children(t_quadtree *qt, t_rectangle rect, const char *s)
+{
+	if (subdividerect(qt->, s))
+		return ();
+	else
+		return ();
+}
