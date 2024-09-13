@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/13 13:53:17 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:03:33 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 float_t	rand_float_t(float_t min, float_t max)
 {
-	return ((float_t)(float_t)rand() / ((float_t)RAND_MAX / (max - min)));
+	return (((float_t)rand() / ((float_t)RAND_MAX / (max - min)) + min));
 }
 
-void	print_rules(t_data *data)
+void	print_rules(float_t **rules)
 {
 	int	i;
 	int	j;
 
 	i = -1;
-	printf("	  RED		GREEN	BLUE	YELLOW\n");
-	while (++i < 4)
+	printf("	  RED	GREEN	BLUE	YELLOW	PINK	CYAN\n");
+	while (++i < PART_NUM)
 	{
 		j = -1;
 		if (i == 0)
@@ -35,87 +35,143 @@ void	print_rules(t_data *data)
 		printf("BLUE	");
 		if (i == 3)
 		printf("YELLOW	");
+		if (i == 4)
+		printf("PINK	");
+		if (i == 5)
+		printf("CYAN	");
 		printf("|");
 		while (++j < 4)
 		{
-			printf(" %f |", data->lsim->rules[i][j]);
+			printf(" %f |", rules[i][j]);
 		}
 			printf("\n");
 	}
 }
 
-void	set_rules(t_data *data)
+void	reset_rules(float_t **rules, int min, int max, int neg)
 {
-	data->lsim->rules[0][0] = 1;
-	data->lsim->rules[0][1] = 1;
-	data->lsim->rules[0][2] = -1;
-	data->lsim->rules[0][3] = -1;
+	int	i;
+	int	j;
+	int	sig;
 
-	data->lsim->rules[1][0] = -1;
-	data->lsim->rules[1][1] = 1;
-	data->lsim->rules[1][2] = 1;
-	data->lsim->rules[1][3] = -1;
+	i = -1;
+	while (++i < PART_NUM)
+	{
+		j = -1;
+		while (++j < PART_NUM)
+		{
+			sig = 1;
+			if (rand() % 2 == 0)
+				sig = -1 * neg;
+			rules[i][j] = rand_float_t(min, max) * sig;
+		}
+	}
+	print_rules(rules);
+}
 
-	data->lsim->rules[2][0] = -1;
-	data->lsim->rules[2][1] = -1;
-	data->lsim->rules[2][2] = 1;
-	data->lsim->rules[2][3] = 1;
+void	malloc_rules(t_data *data)
+{
+	int	i;
+	int	j;
+	int		sig;
 
-	data->lsim->rules[3][0] = 1;
-	data->lsim->rules[3][1] = -1;
-	data->lsim->rules[3][2] = -1;
-	data->lsim->rules[3][3] = 1;
+	i = -1;
+	data->lsim->rules = (float_t **)malloc(sizeof(float_t *) * (PART_NUM));
+	if (!data->lsim->rules)
+		display_error(data, "rules malloc error\n");
+	while (++i < PART_NUM)
+	{
+		j = -1;
+		data->lsim->rules[i] = (float_t *)malloc(sizeof(float_t) * PART_NUM);
+		if (!data->lsim->rules[i])
+			display_error(data, "rules malloc error\n");
+		while (++j < PART_NUM)
+		{
+			sig = 1;
+			if (rand() % 2 == 0)
+				sig = -1;
+			data->lsim->rules[i][j] = rand_float_t(0.3, 1.0) * sig;
+		}
+	}
+	data->lsim->rules[i] = NULL;
+	print_rules(data->lsim->rules);
+}
+
+void	malloc_atrrules(t_data *data)
+{
+	int	i;
+	int	j;
+	int	min;
+	int	max;
+
+	min = 25 * RADIUS;
+	max = 80 * RADIUS;
+	i = -1;
+	data->lsim->atrrules = (float_t **)malloc(sizeof(float_t *) * (PART_NUM + 1));
+	if (!data->lsim->atrrules)
+		display_error(data, "rules malloc error\n");
+	while (++i < PART_NUM)
+	{
+		j = -1;
+		data->lsim->atrrules[i] = (float_t *)malloc(sizeof(float_t) * PART_NUM);
+		if (!data->lsim->atrrules[i])
+			display_error(data, "rules malloc error\n");
+		while (++j < PART_NUM)
+			data->lsim->atrrules[i][j] = rand_float_t(min, max);
+	}
+	data->lsim->atrrules[i] = NULL;
+	print_rules(data->lsim->atrrules);
+}
+
+void	malloc_reprules(t_data *data)
+{
+	int	i;
+	int	j;
+	int	min;
+	int	max;
+
+	min = 10 * RADIUS;
+	max = 17 * RADIUS;
+	i = -1;
+	data->lsim->reprules = (float_t **)malloc(sizeof(float_t *) * (PART_NUM + 1));
+	if (!data->lsim->reprules)
+		display_error(data, "rules malloc error\n");
+	while (++i < PART_NUM)
+	{
+		j = -1;
+		data->lsim->reprules[i] = (float_t *)malloc(sizeof(float_t) * PART_NUM);
+		if (!data->lsim->reprules[i])
+			display_error(data, "rules malloc error\n");
+		while (++j < PART_NUM)
+			data->lsim->reprules[i][j] = rand_float_t(min, max);
+	}
+	data->lsim->reprules[i] = NULL;
+	print_rules(data->lsim->reprules);
 }
 
 void	create_lsim(t_data *data)
 {
 	int		i;
-	int		j;
-	int		sig;
 	t_lifeform	*tmp;
 
 	data->lsim->life = (t_lifeform *)malloc(sizeof(t_lifeform) * NUMBER_OF_LIFEFORM);
 	if (!data->lsim->life)
 		display_error(data, "life malloc error\n");
 	data->lsim->g = 0.3;
-	data->lsim->rules = (float_t **)malloc(sizeof(float_t *) * 5);
-	if (!data->lsim->life)
-		display_error(data, "rules malloc error\n");
 	srand((unsigned int)time(NULL));
-	i = -1;
-	while (++i < 4)
-	{
-		j = -1;
-		data->lsim->rules[i] = (float_t *)malloc(sizeof(float_t) * 4);
-		if (!data->lsim->rules[i])
-			display_error(data, "rules malloc error\n");
-		while (++j < 4)
-		{
-			sig = (rand() % 2) * -1;
-			if (sig == 0)
-				sig = 1;
-			data->lsim->rules[i][j] = rand_float_t(0.0, 1.0) * sig;
-		}
-	}
-	data->lsim->rules[i] = NULL;
-	print_rules(data);
+	malloc_rules(data);
+	malloc_reprules(data);
+	malloc_atrrules(data);
 	i = -1;
 	while (++i < NUMBER_OF_LIFEFORM)
 	{
 		tmp = (data->lsim->life) + i;
-		tmp->pos.x = rand() % WINDX;
-		tmp->pos.y = rand() % WINDY;
-		tmp->vel.x = rand() % 2;
-		tmp->vel.y = rand() % 2;
-		tmp->acel.x = 0;
-		tmp->acel.y = 0;
+		tmp->pos = (t_vector){rand() % WINDX, rand() % WINDY};
+		tmp->vel = (t_vector){0, 0};
+		tmp->acel = (t_vector){0, 0};
 		tmp->mass = 5;
 		tmp->r = RADIUS;
-		if (rand() % 2)
-			tmp->vel.x *= -1;
-		if (rand() % 2)
-			tmp->vel.y *= -1;
-		tmp->id = rand() % 4;
+		tmp->id = i % PART_NUM;
 		if (tmp->id == 0)
 			tmp->color = RED;
 		if (tmp->id == 1)
@@ -124,6 +180,10 @@ void	create_lsim(t_data *data)
 			tmp->color = BLUE;
 		if (tmp->id == 3)
 			tmp->color = YELLOW;
+		if (tmp->id == 4)
+			tmp->color = PINK;
+		if (tmp->id == 5)
+			tmp->color = CYAN;
 	}
 	tmp = (data->lsim->life) + i;
 	tmp = NULL;

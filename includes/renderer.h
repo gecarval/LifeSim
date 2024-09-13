@@ -33,11 +33,14 @@
 # define GREEN	0x00CC00
 # define BLUE	0x0000CC
 # define YELLOW	0xCCCC00
+# define PINK	0xCC00CC
+# define CYAN	0x00CCCC
 
 // LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)2000
+#define NUMBER_OF_LIFEFORM  (int)1000
 #define RADIUS  (int)3
-#define MAX_DIST  100
+#define MAX_DIST  90
+#define PART_NUM 6 
 
 // STRUCTS
 typedef struct s_objinf
@@ -87,6 +90,8 @@ typedef struct s_lifesim
 	t_lifeform	*life;
 	float_t		g;
 	float_t		**rules;
+	float_t		**atrrules;
+	float_t		**reprules;
 }	t_lifesim;
 
 typedef struct s_data
@@ -159,6 +164,7 @@ void	circlebres(int xc, int yc, int r, t_data *data, int color);
 void	create_lsim(t_data *data);
 // LIFE SIM
 void	life_sim(t_data *data);
+void	reset_rules(float_t **rules, int min, int max, int neg);
 // DELTAS
 void	defdel(t_delta *a, float_t ini, float_t fin);
 t_delta	revdel(t_delta a);

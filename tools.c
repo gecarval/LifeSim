@@ -6,7 +6,7 @@
 /*   By: gecarval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/13 10:38:36 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 18:44:46 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,12 @@ int	mlx_cooked(int key, t_data *data)
 		exit_data(data, 0);
 	if (key == ']')
 		data->timing += 10000000;
+	if (key == 'r')
+	{
+		reset_rules(data->lsim->rules, 0.3, 1.0, 1);
+		reset_rules(data->lsim->atrrules, 25 * RADIUS, 80 * RADIUS, -1);
+		reset_rules(data->lsim->reprules, 10 * RADIUS, 17 * RADIUS, -1);
+	}
 	if (key == '[')
 		if (data->timing > 9999999)
 			data->timing -= 10000000;

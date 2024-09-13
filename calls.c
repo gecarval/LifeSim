@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/12 14:05:06 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/13 15:57:27 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ int	exit_data(t_data *data, int fd)
 		mlx_destroy_image(data->ini, data->img->img_ptr);
 	if (data != NULL && data->img != NULL)
 		free(data->img);
+	if (data != NULL && data->lsim != NULL && data->lsim->atrrules != NULL)
+		ft_free_matrix((void **)data->lsim->atrrules);
+	if (data != NULL && data->lsim != NULL && data->lsim->reprules != NULL)
+		ft_free_matrix((void **)data->lsim->reprules);
 	if (data != NULL && data->lsim != NULL && data->lsim->rules != NULL)
 		ft_free_matrix((void **)data->lsim->rules);
 	if (data != NULL && data->lsim != NULL && data->lsim->life != NULL)
