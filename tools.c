@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 15:22:15 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 21:46:56 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	mlx_cooked(int key, t_data *data)
 			data->timing -= 10000000;
 	if (key == 'r')
 	{
-		reset_rules(data, data->lsim->rules, 0.3, 1.0, 1);
+		reset_rules(data, data->lsim->rules, 0.3, 2.0, 1);
 		reset_rules(data, data->lsim->atrrules, 25 * data->radius, 80 * data->radius, -1);
 		reset_rules(data, data->lsim->reprules, 10 * data->radius, 17 * data->radius, -1);
 	}
@@ -184,7 +184,7 @@ void	print_rules(t_data *data, float_t **rules)
 	int	j;
 
 	i = -1;
-	printf("	  RED      GREEN     BLUE     YELLOW     PINK    CYAN\n");
+	printf("	    RED        GREEN       BLUE     YELLOW         PINK       CYAN\n");
 	while (++i < data->part_num)
 	{
 		j = -1;
@@ -201,7 +201,7 @@ void	print_rules(t_data *data, float_t **rules)
 		if (i == 5)
 			printf("CYAN	");
 		printf("|");
-		while (++j < 4)
+		while (++j < data->part_num)
 			printf(" %f |", rules[i][j]);
 		printf("\n");
 	}

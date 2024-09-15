@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:30:59 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 17:19:07 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 21:15:02 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_vector	vector_setmagdiv(t_vector v, float_t magnitude)
 {
 	float_t	mag;
 
-	mag = sqrt(vector_magsq(v));
+	mag = sqrtf(vector_magsq(v));
 	if (magnitude != 0)
 		return (vectordiv(v, mag / magnitude));
 	return (v);

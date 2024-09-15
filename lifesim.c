@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 19:54:20 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 21:51:42 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 			force.y += data->winy;
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = data->lsim->rules[mover->id][other->id] * ((g * mover->mass * other->mass) / dist);
-		force = vector_setmagdiv(force, strength);
+		force = vector_setmagmult(force, strength);
 		applyforce(other, force);
 	}
 }
@@ -142,7 +142,7 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 			force.y += data->winy;
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((g * mover->mass * other->mass) / dist);
-		force = vector_setmagdiv(force, strength);
+		force = vector_setmagmult(force, strength);
 		applyforce(other, force);
 	}
 }
@@ -244,6 +244,7 @@ void	process_physics(t_data *data)
 	int			i;
 	int			j;
 	float_t		d;
+	t_vector	dist;
 	t_lifeform	*tmp;
 	t_lifeform	*tmp2;
 
@@ -257,7 +258,16 @@ void	process_physics(t_data *data)
 		{
 			if (tmp != tmp2)
 			{
-				d = vector_magsqsqrt(vectorsub(tmp2->pos, tmp->pos));
+				dist = vectorsub(tmp2->pos, tmp->pos);
+				if (dist.x > 0.5 * data->winx)
+					dist.x -= data->winx;
+				if (dist.x < -0.5 * data->winx)
+					dist.x += data->winx;
+				if (dist.y > 0.5 * data->winy)
+					dist.y -= data->winy;
+				if (dist.y < -0.5 * data->winy)
+					dist.y += data->winy;
+				d = vector_magsqsqrt(dist);
 				collision(tmp, tmp2, d);
 				attraction(tmp, tmp2, data, d);
 				repulsion(tmp, tmp2, data, d);

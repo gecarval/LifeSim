@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:34:34 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 11:15:06 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 21:26:19 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ float_t	sqdistfrompt(t_point *p, t_point *other)
 
 float_t	distfrompt(t_point *p, t_point *other)
 {
-	return (sqrt(sqdistfrompt(p, other)));
+	return (sqrtf(sqdistfrompt(p, other)));
 }
 
 // RECTANGLE HELPERS FUNCTIONS
