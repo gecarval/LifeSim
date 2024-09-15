@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 18:14:45 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 19:54:20 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,15 @@ void	render_lifeform(t_data *data)
 
 	i = -1;
 	tmp = data->lsim->life;
-	render_background(data, 0x000000);
+	while (++i < data->num_of_life)
+	{
+		j = tmp->r;
+		while (--j >= 0)
+			circlebres((int)tmp->prev_pos.x, (int)tmp->prev_pos.y, j, data, 0x000000);
+		tmp = tmp->next;
+	}
+	i = -1;
+	tmp = data->lsim->life;
 	while (++i < data->num_of_life)
 	{
 		j = tmp->r;
@@ -85,61 +93,61 @@ void	applyforce(t_lifeform *mover, t_vector force)
 	mover->acel = vectoradd(mover->acel, f);
 }
 
-void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data)
+void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 {
 	t_vector	force;
 	float_t		strength;
 	float_t		dist;
 	float_t		g;
 
-	g = 1;
-	force = (t_vector){0, 0};
-	force = vectorsub(mover->pos, other->pos);
-	if (force.x > 0.5 * data->winx)
-		force.x -= data->winx;
-	if (force.x < -0.5 * data->winx)
-		force.x += data->winx;
-	if (force.y > 0.5 * data->winy)
-		force.y -= data->winy;
-	if (force.y < -0.5 * data->winy)
-		force.y += data->winy;
-	dist = constrain_float_t(vector_magsq(force), 100, 1000);
-	if (vector_magsqsqrt(force) < data->lsim->atrrules[mover->id][other->id])
+	if (d < data->lsim->atrrules[mover->id][other->id])
 	{
+		g = 1;
+		force = (t_vector){0, 0};
+		force = vectorsub(mover->pos, other->pos);
+		if (force.x > 0.5 * data->winx)
+			force.x -= data->winx;
+		if (force.x < -0.5 * data->winx)
+			force.x += data->winx;
+		if (force.y > 0.5 * data->winy)
+			force.y -= data->winy;
+		if (force.y < -0.5 * data->winy)
+			force.y += data->winy;
+		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = data->lsim->rules[mover->id][other->id] * ((g * mover->mass * other->mass) / dist);
 		force = vector_setmagdiv(force, strength);
 		applyforce(other, force);
 	}
 }
 
-void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data)
+void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 {
 	t_vector	force;
 	float_t		strength;
 	float_t		dist;
 	float_t		g;
 
-	g = 3;
-	force = (t_vector){0, 0};
-	force = vectorsub(mover->pos, other->pos);
-	if (force.x > 0.5 * data->winx)
-		force.x -= data->winx;
-	if (force.x < -0.5 * data->winx)
-		force.x += data->winx;
-	if (force.y > 0.5 * data->winy)
-		force.y -= data->winy;
-	if (force.y < -0.5 * data->winy)
-		force.y += data->winy;
-	dist = constrain_float_t(vector_magsq(force), 100, 1000);
-	if (vector_magsqsqrt(force) < data->lsim->reprules[mover->id][other->id])
+	if (d < data->lsim->reprules[mover->id][other->id])
 	{
+		g = 3;
+		force = (t_vector){0, 0};
+		force = vectorsub(mover->pos, other->pos);
+		if (force.x > 0.5 * data->winx)
+			force.x -= data->winx;
+		if (force.x < -0.5 * data->winx)
+			force.x += data->winx;
+		if (force.y > 0.5 * data->winy)
+			force.y -= data->winy;
+		if (force.y < -0.5 * data->winy)
+			force.y += data->winy;
+		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((g * mover->mass * other->mass) / dist);
 		force = vector_setmagdiv(force, strength);
 		applyforce(other, force);
 	}
 }
 
-void	collision(t_lifeform *p1, t_lifeform *p2)
+void	collision(t_lifeform *p1, t_lifeform *p2, float_t d)
 {
 	t_vector	impactvector;
 	t_vector	deltava;
@@ -150,12 +158,10 @@ void	collision(t_lifeform *p1, t_lifeform *p2)
 	float_t		msum;
 	float_t		num;
 	float_t		den;
-	float_t		d;
 
-	impactvector = vectorsub(p2->pos, p1->pos);
-	d = vector_magsqsqrt(impactvector);
 	if (d < p1->r + p2->r)
 	{
+		impactvector = vectorsub(p2->pos, p1->pos);
 		overlap = d - (p1->r + p2->r);
 		dir = impactvector;
 		dir = vector_setmagmult(dir, overlap * 0.5);
@@ -184,20 +190,12 @@ void	fricction(t_lifeform *mover)
 
 	acx = 0;
 	acy = 0;
-	if (mover->vel.x != 0 || mover->vel.y != 0)
-	{
-		if (mover->vel.x != 0)
-		{
-			acx = mover->vel.x / 75;
-			mover->acel = create_vector(acx, acy);
-		}
-		if (mover->vel.y != 0)
-		{
-			acy = mover->vel.y / 75;
-			mover->acel = create_vector(acx, acy);
-		}
-		mover->vel = vectorsub(mover->vel, mover->acel);
-	}
+	if (mover->vel.x != 0)
+		acx = mover->vel.x / 75;
+	if (mover->vel.y != 0)
+		acy = mover->vel.y / 75;
+	mover->acel = create_vector(acx, acy);
+	mover->vel = vectorsub(mover->vel, mover->acel);
 }
 
 void	limit_velocity(t_lifeform *mover, float_t limit)
@@ -217,60 +215,6 @@ void	update_position(t_lifeform *mover)
 	mover->acel = create_vector(0, 0);
 }
 
-void	process_collision(t_data *data)
-{
-	int			i;
-	int			j;
-	int			rp;
-	t_lifeform	*tmp;
-	t_lifeform	*tmp2;
-
-	i = -1;
-	tmp = data->lsim->life;
-	while (++i < data->num_of_life)
-	{
-		rp = -1;
-		while (++rp < COLLISION_STEPS)
-		{
-			j = -1;
-			tmp2 = data->lsim->life;
-			while (++j < data->num_of_life)
-			{
-				if (tmp != tmp2)
-					collision(tmp, tmp2);
-				tmp2 = tmp2->next;
-			}
-		}
-		tmp = tmp->next;
-	}
-}
-
-void	process_attraction(t_data *data)
-{
-	int			i;
-	int			j;
-	t_lifeform	*tmp;
-	t_lifeform	*tmp2;
-
-	i = -1;
-	tmp = data->lsim->life;
-	while (++i < data->num_of_life)
-	{
-		j = -1;
-		tmp2 = data->lsim->life;
-		while (++j < data->num_of_life)
-		{
-			if (tmp != tmp2)
-			{
-				repulsion(tmp, tmp2, data);
-				attraction(tmp, tmp2, data);
-			}
-			tmp2 = tmp2->next;
-		}
-		tmp = tmp->next;
-	}
-}
-
 void	process_velocity(t_data *data)
 {
 	int			i;
@@ -280,6 +224,7 @@ void	process_velocity(t_data *data)
 	tmp = (data->lsim->life);
 	while (i < data->num_of_life)
 	{
+		tmp->prev_pos = tmp->pos;
 		update_position(tmp);
 		if (tmp->pos.x > data->winx)
 			tmp->pos.x = 0;
@@ -294,10 +239,38 @@ void	process_velocity(t_data *data)
 	}
 }
 
+void	process_physics(t_data *data)
+{
+	int			i;
+	int			j;
+	float_t		d;
+	t_lifeform	*tmp;
+	t_lifeform	*tmp2;
+
+	i = -1;
+	tmp = data->lsim->life;
+	while (++i < data->num_of_life)
+	{
+		j = -1;
+		tmp2 = data->lsim->life;
+		while (++j < data->num_of_life)
+		{
+			if (tmp != tmp2)
+			{
+				d = vector_magsqsqrt(vectorsub(tmp2->pos, tmp->pos));
+				collision(tmp, tmp2, d);
+				attraction(tmp, tmp2, data, d);
+				repulsion(tmp, tmp2, data, d);
+			}
+			tmp2 = tmp2->next;
+		}
+		tmp = tmp->next;
+	}
+}
+
 void	life_sim(t_data *data)
 {
-	process_attraction(data);
-	process_collision(data);
-	process_velocity(data);
 	render_lifeform(data);
+	process_velocity(data);
+	process_physics(data);
 }

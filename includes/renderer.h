@@ -66,6 +66,7 @@ typedef struct s_vector
 
 typedef struct s_lifeform
 {
+	t_vector			prev_pos;
 	t_vector			pos;
 	t_vector			vel;
 	t_vector			acel;
