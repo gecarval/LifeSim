@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 11:50:37 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 15:22:15 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,33 +49,27 @@ int	mlx_anim(t_data *data)
 
 int	mlx_cooked(int key, t_data *data)
 {
-	if (key == '1')
-	{
-		data->anilsim *= -1;
-	}
 	if (key == ESC)
 		exit_data(data, 0);
+	if (key == '1')
+		data->anilsim *= -1;
 	if (key == ']')
 		data->timing += 10000000;
+	if (key == '[')
+		if (data->timing > 9999999)
+			data->timing -= 10000000;
 	if (key == 'r')
 	{
 		reset_rules(data, data->lsim->rules, 0.3, 1.0, 1);
 		reset_rules(data, data->lsim->atrrules, 25 * data->radius, 80 * data->radius, -1);
 		reset_rules(data, data->lsim->reprules, 10 * data->radius, 17 * data->radius, -1);
 	}
-	if (key == '[')
-		if (data->timing > 9999999)
-			data->timing -= 10000000;
 	if (key == ' ')
 	{
 		render_background(data, 0x000000);
 		mlx_put_image_to_window(data->ini, data->win, data->img->img_ptr, 0, 0);
 		water_mark(data);
 	}
-	if (key == 65362)
-		data->anispeed += 0.0025;
-	if (key == 65364)
-		data->anispeed -= 0.0025;
 	return (0);
 }
 
@@ -163,6 +157,27 @@ t_delta	revdel(t_delta a)
 }
 
 // RULES
+void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg)
+{
+	int	i;
+	int	j;
+	int	sig;
+
+	i = -1;
+	while (++i < data->part_num)
+	{
+		j = -1;
+		while (++j < data->part_num)
+		{
+			sig = 1;
+			if (rand() % 2 == 0)
+				sig = -1 * neg;
+			rules[i][j] = rand_float_t(min, max) * sig;
+		}
+	}
+	print_rules(data, rules);
+}
+
 void	print_rules(t_data *data, float_t **rules)
 {
 	int	i;
@@ -190,27 +205,6 @@ void	print_rules(t_data *data, float_t **rules)
 			printf(" %f |", rules[i][j]);
 		printf("\n");
 	}
-}
-
-void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg)
-{
-	int	i;
-	int	j;
-	int	sig;
-
-	i = -1;
-	while (++i < data->part_num)
-	{
-		j = -1;
-		while (++j < data->part_num)
-		{
-			sig = 1;
-			if (rand() % 2 == 0)
-				sig = -1 * neg;
-			rules[i][j] = rand_float_t(min, max) * sig;
-		}
-	}
-	print_rules(data, rules);
 }
 
 // MATH

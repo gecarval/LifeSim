@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:30:59 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 11:15:44 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 17:19:07 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,23 @@ t_vector	vectordiv(t_vector v, float_t scalar)
 	return (create_vector(v.x, v.y));
 }
 
-t_vector	vector_setmag(t_vector v, float_t magnitude)
+t_vector	vector_setmagdiv(t_vector v, float_t magnitude)
+{
+	float_t	mag;
+
+	mag = sqrt(vector_magsq(v));
+	if (magnitude != 0)
+		return (vectordiv(v, mag / magnitude));
+	return (v);
+}
+
+t_vector	vector_setmagmult(t_vector v, float_t magnitude)
 {
 	float_t	mag;
 
 	mag = vector_magsqsqrt(v);
 	if (mag != 0)
-		return (vectordiv(v, mag / magnitude));
+		return (vectormult(v, magnitude / mag));
 	return (v);
 }
 

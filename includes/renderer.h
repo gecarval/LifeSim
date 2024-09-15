@@ -30,6 +30,7 @@
 # define WINX	1200
 # define WINY	800
 
+# define COLLISION_STEPS	1
 # define RED	0xCC0000
 # define GREEN	0x00CC00
 # define BLUE	0x0000CC
@@ -65,7 +66,6 @@ typedef struct s_vector
 
 typedef struct s_lifeform
 {
-	t_vector			ppos;
 	t_vector			pos;
 	t_vector			vel;
 	t_vector			acel;
@@ -93,18 +93,33 @@ typedef struct s_img
 	int		bpp;
 }	t_img;
 
+typedef struct s_button
+{
+	t_vector	pos;
+	char		*text;
+	int			txt_col;
+	int			btt_col;
+	int			outln_color;
+}	t_button;
+
+typedef struct s_textbox
+{
+	t_vector	pos;
+	char		*text;
+	int			txt_col;
+	int			outln_color;
+}	t_textbox;
+
 typedef struct s_menu
 {
 	t_vector	pos;
-	t_img		*img;
-	char		*text;
+	t_button	*button;
+	t_textbox	*text_box;
 	int			num_of_life;
 	int			part_num;
 	int			radius;
-	int			button;
-	int			color_bg;
-	int			color_bt;
-	int			color_hg;
+	int			bg_col;
+	int			outln_col;
 }	t_menu;
 
 
@@ -115,17 +130,16 @@ typedef struct s_data
 	t_img		*img;
 	t_menu		*menu;
 	t_lifesim	*lsim;
-	float_t		anispeed;
-	int		num_of_life;
-	int		part_num;
-	int		radius;
-	int		winx;
-	int		winy;
-	int		anilsim;
-	int		click_hold;
-	int		mposx;
-	int		mposy;
-	int		timing;
+	int			num_of_life;
+	int			part_num;
+	int			radius;
+	int			winx;
+	int			winy;
+	int			anilsim;
+	int			click_hold;
+	int			mposx;
+	int			mposy;
+	int			timing;
 }	t_data;
 
 typedef struct s_circle
@@ -206,7 +220,8 @@ t_vector	vectorsub(t_vector v1, t_vector v2);
 t_vector	vectordot(t_vector v1, t_vector v2);
 t_vector	vectormult(t_vector v, float_t scalar);
 t_vector	vectordiv(t_vector v, float_t scalar);
-t_vector	vector_setmag(t_vector v, float_t magnitude);
+t_vector	vector_setmagmult(t_vector v, float_t magnitude);
+t_vector	vector_setmagdiv(t_vector v, float_t magnitude);
 float_t		vector_magsqsqrt(t_vector v);
 float_t		vector_magsq(t_vector v);
 float_t		constrain_float_t(float_t val, float_t min, float_t max);

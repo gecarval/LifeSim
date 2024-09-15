@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 12:30:02 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 15:18:45 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,16 +117,16 @@ void	create_lsim(t_data *data)
 	malloc_rules(data);
 	malloc_atrrules(data);
 	malloc_reprules(data);
-	i = -1;
 	data->lsim->life = (t_lifeform *)malloc(sizeof(t_lifeform));
 	if (!data->lsim->life)
 		display_error(data, "life malloc error\n");
+	i = -1;
 	tmp = data->lsim->life;
 	while (++i < data->num_of_life)
 	{
-		tmp->pos = (t_vector){rand() % data->winx, rand() % data->winy};
-		tmp->vel = (t_vector){0, 0};
-		tmp->acel = (t_vector){0, 0};
+		tmp->pos = create_vector(rand() % data->winx, rand() % data->winy);
+		tmp->vel = create_vector(0, 0);
+		tmp->acel = create_vector(0, 0);
 		tmp->mass = 5;
 		tmp->r = data->radius;
 		tmp->id = i % data->part_num;

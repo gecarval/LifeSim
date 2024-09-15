@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 12:10:00 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 18:14:45 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ void	render_attraction(t_data *data)
 	}
 }
 
-//	render_attraction(data);
 void	render_lifeform(t_data *data)
 {
 	int			i;
@@ -86,7 +85,7 @@ void	applyforce(t_lifeform *mover, t_vector force)
 	mover->acel = vectoradd(mover->acel, f);
 }
 
-void	attract(t_lifeform *mover, t_lifeform *other, t_data *data)
+void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data)
 {
 	t_vector	force;
 	float_t		strength;
@@ -108,7 +107,7 @@ void	attract(t_lifeform *mover, t_lifeform *other, t_data *data)
 	if (vector_magsqsqrt(force) < data->lsim->atrrules[mover->id][other->id])
 	{
 		strength = data->lsim->rules[mover->id][other->id] * ((g * mover->mass * other->mass) / dist);
-		force = vector_setmag(force, strength);
+		force = vector_setmagdiv(force, strength);
 		applyforce(other, force);
 	}
 }
@@ -135,7 +134,7 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data)
 	if (vector_magsqsqrt(force) < data->lsim->reprules[mover->id][other->id])
 	{
 		strength = -1 * ((g * mover->mass * other->mass) / dist);
-		force = vector_setmag(force, strength);
+		force = vector_setmagdiv(force, strength);
 		applyforce(other, force);
 	}
 }
@@ -159,12 +158,12 @@ void	collision(t_lifeform *p1, t_lifeform *p2)
 	{
 		overlap = d - (p1->r + p2->r);
 		dir = impactvector;
-		dir = vector_setmag(dir, overlap * 0.5);
+		dir = vector_setmagmult(dir, overlap * 0.5);
 		p1->pos = vectoradd(p1->pos, dir);
 		dir = vectormult(dir, -1);
 		p2->pos = vectoradd(p2->pos, dir);
 		d = p1->r + p2->r;
-		impactvector = vector_setmag(impactvector, d);
+		impactvector = vector_setmagmult(impactvector, d);
 		msum = p1->mass + p2->mass;
 		vdiff = vectorsub(p2->vel, p1->vel);
 		num = vdiff.x * impactvector.x + vdiff.y * impactvector.y;
@@ -178,20 +177,14 @@ void	collision(t_lifeform *p1, t_lifeform *p2)
 	}
 }
 
-void	update_mover(t_lifeform *mover)
+void	fricction(t_lifeform *mover)
 {
 	float_t	acx;
 	float_t	acy;
 
 	acx = 0;
 	acy = 0;
-	mover->vel = vectoradd(mover->vel, mover->acel);
-	if (mover->vel.x > 0.6)
-		mover->vel.x = 0.6;
-	if (mover->vel.y > 0.6)
-		mover->vel.y = 0.6;
-	mover->pos = vectoradd(mover->pos, mover->vel);
-	if (mover->vel.x != 0 && mover->vel.y != 0)
+	if (mover->vel.x != 0 || mover->vel.y != 0)
 	{
 		if (mover->vel.x != 0)
 		{
@@ -204,8 +197,23 @@ void	update_mover(t_lifeform *mover)
 			mover->acel = create_vector(acx, acy);
 		}
 		mover->vel = vectorsub(mover->vel, mover->acel);
-		mover->pos = vectoradd(mover->pos, mover->vel);
 	}
+}
+
+void	limit_velocity(t_lifeform *mover, float_t limit)
+{
+	if (mover->vel.x > limit)
+		mover->vel.x = limit;
+	if (mover->vel.y > limit)
+		mover->vel.y = limit;
+}
+
+void	update_position(t_lifeform *mover)
+{
+	mover->vel = vectoradd(mover->vel, mover->acel);
+	limit_velocity(mover, 0.6);
+	fricction(mover);
+	mover->pos = vectoradd(mover->pos, mover->vel);
 	mover->acel = create_vector(0, 0);
 }
 
@@ -222,14 +230,16 @@ void	process_collision(t_data *data)
 	while (++i < data->num_of_life)
 	{
 		rp = -1;
-		tmp2 = data->lsim->life;
-		while (++rp < 1)
+		while (++rp < COLLISION_STEPS)
 		{
 			j = -1;
+			tmp2 = data->lsim->life;
 			while (++j < data->num_of_life)
-				if (i != j)
+			{
+				if (tmp != tmp2)
 					collision(tmp, tmp2);
-			tmp2 = tmp2->next;
+				tmp2 = tmp2->next;
+			}
 		}
 		tmp = tmp->next;
 	}
@@ -250,10 +260,11 @@ void	process_attraction(t_data *data)
 		tmp2 = data->lsim->life;
 		while (++j < data->num_of_life)
 		{
-			if (i != j)
+			if (tmp != tmp2)
+			{
 				repulsion(tmp, tmp2, data);
-			if (i != j)
-				attract(tmp, tmp2, data);
+				attraction(tmp, tmp2, data);
+			}
 			tmp2 = tmp2->next;
 		}
 		tmp = tmp->next;
@@ -269,9 +280,7 @@ void	process_velocity(t_data *data)
 	tmp = (data->lsim->life);
 	while (i < data->num_of_life)
 	{
-		tmp->ppos.x = tmp->pos.x;
-		tmp->ppos.y = tmp->pos.y;
-		update_mover(tmp);
+		update_position(tmp);
 		if (tmp->pos.x > data->winx)
 			tmp->pos.x = 0;
 		if (tmp->pos.y > data->winy)
@@ -288,7 +297,7 @@ void	process_velocity(t_data *data)
 void	life_sim(t_data *data)
 {
 	process_attraction(data);
-	process_velocity(data);
 	process_collision(data);
+	process_velocity(data);
 	render_lifeform(data);
 }

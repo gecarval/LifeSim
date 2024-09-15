@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 16:57:08 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 12:04:12 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/15 15:22:43 by anonymous        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int	main(int argc, char **argv)
 	ft_init_program(data);
 	create_lsim(data);
 	data->anilsim = -1;
-	data->anispeed = 0.01;
 	data->click_hold = 0;
 	data->timing = 0;
 	water_mark(data);
