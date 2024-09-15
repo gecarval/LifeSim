@@ -26,9 +26,9 @@
 # include "../libft/libft.h"
 
 // WINDOW MACROS
-# define WINDX	(int)1600
-# define WINDY	(int)900
 # define ESC	65307 
+# define WINX	1200
+# define WINY	800
 
 # define RED	0xCC0000
 # define GREEN	0x00CC00
@@ -37,11 +37,7 @@
 # define PINK	0xCC00CC
 # define CYAN	0x00CCCC
 
-// LIFE SIM
-#define NUMBER_OF_LIFEFORM  (int)10000
-#define RADIUS  (int)3
-#define MAX_DIST  90
-#define PART_NUM 4 
+// QUAD TREE
 #define DEFAULT_CAPACITY 8
 #define MAX_DEPTH 8
 
@@ -61,6 +57,33 @@ typedef struct s_delta
 	float_t	fin;
 }	t_delta;
 
+typedef struct s_vector
+{
+	float_t	x;
+	float_t	y;
+}	t_vector;
+
+typedef struct s_lifeform
+{
+	t_vector			ppos;
+	t_vector			pos;
+	t_vector			vel;
+	t_vector			acel;
+	int					id;
+	int					color;
+	int					mass;
+	int					r;
+	struct s_lifeform	*next;
+}	t_lifeform;
+
+typedef struct s_lifesim
+{
+	t_lifeform	*life;
+	float_t		**rules;
+	float_t		**atrrules;
+	float_t		**reprules;
+}	t_lifesim;
+
 typedef struct s_img
 {
 	void	*img_ptr;
@@ -70,40 +93,34 @@ typedef struct s_img
 	int		bpp;
 }	t_img;
 
-typedef struct s_vector
+typedef struct s_menu
 {
-	float_t	x;
-	float_t	y;
-}	t_vector;
-
-typedef struct s_lifeform
-{
-	t_vector	ppos;
 	t_vector	pos;
-	t_vector	vel;
-	t_vector	acel;
-	int		id;
-	int		color;
-	int		mass;
-	int		r;
-}	t_lifeform;
+	t_img		*img;
+	char		*text;
+	int			num_of_life;
+	int			part_num;
+	int			radius;
+	int			button;
+	int			color_bg;
+	int			color_bt;
+	int			color_hg;
+}	t_menu;
 
-typedef struct s_lifesim
-{
-	t_lifeform	*life;
-	float_t		g;
-	float_t		**rules;
-	float_t		**atrrules;
-	float_t		**reprules;
-}	t_lifesim;
 
 typedef struct s_data
 {
 	void		*ini;
 	void		*win;
 	t_img		*img;
+	t_menu		*menu;
 	t_lifesim	*lsim;
 	float_t		anispeed;
+	int		num_of_life;
+	int		part_num;
+	int		radius;
+	int		winx;
+	int		winy;
 	int		anilsim;
 	int		click_hold;
 	int		mposx;
@@ -140,20 +157,31 @@ typedef struct s_point
 
 typedef struct s_quadtree
 {
-	t_rectangle		boundary;
-	t_point			**points;
-	int			capacity;
-	int			depth;
-	int			divided;
+	t_rectangle			boundary;
+	t_point				**points;
+	int					capacity;
+	int					depth;
+	bool				divided;
 	struct s_quadtree	*northeast;
 	struct s_quadtree	*northwest;
 	struct s_quadtree	*southeast;
 	struct s_quadtree	*southwest;
 }	t_quadtree;
 
-// WATER MARKS
-void	water_mark(t_data *data);
-void	controls_mark(t_data *data);
+// PROCESS CALLS
+void	display_error(t_data *data, char *msg);
+void	create_tensor(t_data *data);
+void	ft_init_program(t_data *data);
+void	ft_free_matrix(void **vec);
+void	ft_free_tensor(void ***z);
+int		exit_data(t_data *data, int fd);
+// MAP READ
+void	create_lsim(t_data *data);
+// HOOKS
+int		mlx_cooked(int	key, t_data *data);
+int		mlx_anim(t_data *data);
+int		mouse_click(int key, int x, int y, t_data *data);
+int		mouse_released(int key, t_data *data);
 //PIXEL PUTS
 void	pixel_to_img(int x, int y, t_data *data, int color);
 void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color);
@@ -163,37 +191,29 @@ void	draw_line_x(t_delta x, t_delta y, t_data *data, int color);
 void	draw_line(t_delta x, t_delta y, t_data *data, int color);
 void	drawcircle(int xc, int yc, int x, int y, t_data *data, int color);
 void	circlebres(int xc, int yc, int r, t_data *data, int color);
-// MAP READ
-void	create_lsim(t_data *data);
+// WATER MARKS
+void	water_mark(t_data *data);
+void	controls_mark(t_data *data);
 // LIFE SIM
 void	life_sim(t_data *data);
-void	reset_rules(float_t **rules, int min, int max, int neg);
-// DELTAS
-void	defdel(t_delta *a, float_t ini, float_t fin);
-t_delta	revdel(t_delta a);
+void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg);
+void	ft_set_params(t_data *data, int life_n, int radius, int part_n);
+void	print_rules(t_data *data, float_t **rules);
 // VECTORS
 t_vector	create_vector(float_t x, float_t y);
-t_vector	vector_sub(t_vector v1, t_vector v2);
+t_vector	vectoradd(t_vector v1, t_vector v2);
+t_vector	vectorsub(t_vector v1, t_vector v2);
 t_vector	vectordot(t_vector v1, t_vector v2);
 t_vector	vectormult(t_vector v, float_t scalar);
 t_vector	vectordiv(t_vector v, float_t scalar);
 t_vector	vector_setmag(t_vector v, float_t magnitude);
 float_t		vector_magsqsqrt(t_vector v);
 float_t		vector_magsq(t_vector v);
-float_t		constrain(float_t val, float_t min, float_t max);
-void		vectoradd(t_vector *v1, t_vector v2);
-void		setmag(t_vector *v, float_t mag);
-// PROCESS CALLS
-void	ft_free_tensor(void ***z);
-void	ft_free_matrix(void **vec);
-void	display_error(t_data *data, char *msg);
-void	ft_init_program(t_data *data);
-void	create_tensor(t_data *data);
-int		exit_data(t_data *data, int fd);
-// HOOKS
-int		mlx_cooked(int	key, t_data *data);
-int		mlx_anim(t_data *data);
-int		mouse_click(int key, int x, int y, t_data *data);
-int		mouse_released(int key, t_data *data);
+float_t		constrain_float_t(float_t val, float_t min, float_t max);
+// DELTAS
+void	defdel(t_delta *a, float_t ini, float_t fin);
+t_delta	revdel(t_delta a);
+// MATH
+float_t	rand_float_t(float_t min, float_t max);
 
 #endif
