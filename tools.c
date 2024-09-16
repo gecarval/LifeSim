@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 21:46:56 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/16 11:42:32 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,11 @@ int	mlx_cooked(int key, t_data *data)
 	if (key == '[')
 		if (data->timing > 9999999)
 			data->timing -= 10000000;
+	if (key == 't')
+		reset_pos(data);
 	if (key == 'r')
 	{
-		reset_rules(data, data->lsim->rules, 0.3, 2.0, 1);
+		reset_rules(data, data->lsim->rules, 0.3, 1.0, 1);
 		reset_rules(data, data->lsim->atrrules, 25 * data->radius, 80 * data->radius, -1);
 		reset_rules(data, data->lsim->reprules, 10 * data->radius, 17 * data->radius, -1);
 	}
@@ -133,9 +135,7 @@ void	ft_free_tensor(void ***z)
 
 	i = -1;
 	while (z[++i])
-	{
 		ft_free_matrix(z[i]);
-	}
 	free(z);
 }
 
@@ -176,6 +176,21 @@ void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg)
 		}
 	}
 	print_rules(data, rules);
+}
+
+void	reset_pos(t_data *data)
+{
+	int		i;
+	t_lifeform	*tmp;
+
+	i = 0;
+	tmp = data->lsim->life;
+	while (i < data->num_of_life)
+	{
+		tmp->pos = create_vector(rand() % data->winx, rand() % data->winy);
+		tmp = tmp->next;
+		i++;
+	}
 }
 
 void	print_rules(t_data *data, float_t **rules)

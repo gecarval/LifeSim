@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 21:47:00 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/16 14:05:50 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	malloc_rules(t_data *data)
 			sig = 1;
 			if (rand() % 2 == 0)
 				sig = -1;
-			data->lsim->rules[i][j] = rand_float_t(0.3, 2.0) * sig;
+			data->lsim->rules[i][j] = rand_float_t(0.3, 1.0) * sig;
 		}
 	}
 	data->lsim->rules[i] = NULL;
@@ -125,6 +125,7 @@ void	create_lsim(t_data *data)
 	while (++i < data->num_of_life)
 	{
 		tmp->pos = create_vector(rand() % data->winx, rand() % data->winy);
+		tmp->prev_pos = create_vector(0, 0);
 		tmp->vel = create_vector(0, 0);
 		tmp->acel = create_vector(0, 0);
 		tmp->mass = 5;

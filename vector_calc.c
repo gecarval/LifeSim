@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:30:59 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 21:15:02 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/16 13:11:04 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,32 @@ t_vector	vector_setmagmult(t_vector v, float_t magnitude)
 	mag = vector_magsqsqrt(v);
 	if (mag != 0)
 		return (vectormult(v, magnitude / mag));
+	return (v);
+}
+
+t_vector	mirror_forces(t_vector v, t_data *data)
+{
+	if (v.x > 0.5 * data->winx)
+		v.x -= data->winx;
+	if (v.x < -0.5 * data->winx)
+		v.x += data->winx;
+	if (v.y > 0.5 * data->winy)
+		v.y -= data->winy;
+	if (v.y < -0.5 * data->winy)
+		v.y += data->winy;
+	return (v);
+}
+
+t_vector	limit_vector(t_vector v, t_data *data)
+{
+	if (v.x > data->winx)
+		v.x = 0;
+	if (v.y > data->winy)
+		v.y = 0;
+	if (v.x < 0)
+		v.x = data->winx;
+	if (v.y < 0)
+		v.y = data->winy;
 	return (v);
 }
 

@@ -14,6 +14,7 @@
 // LIBRARIES
 # include <stdio.h>
 # include <stdlib.h>
+# include <pthread.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <time.h>
@@ -173,7 +174,8 @@ typedef struct s_point
 typedef struct s_quadtree
 {
 	t_rectangle			boundary;
-	t_point				**points;
+	t_point				*points;
+	int					point_count;
 	int					capacity;
 	int					depth;
 	bool				divided;
@@ -212,6 +214,7 @@ void	controls_mark(t_data *data);
 // LIFE SIM
 void	life_sim(t_data *data);
 void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg);
+void	reset_pos(t_data *data);
 void	ft_set_params(t_data *data, int life_n, int radius, int part_n);
 void	print_rules(t_data *data, float_t **rules);
 // VECTORS
@@ -223,9 +226,14 @@ t_vector	vectormult(t_vector v, float_t scalar);
 t_vector	vectordiv(t_vector v, float_t scalar);
 t_vector	vector_setmagmult(t_vector v, float_t magnitude);
 t_vector	vector_setmagdiv(t_vector v, float_t magnitude);
+t_vector	mirror_forces(t_vector v, t_data *data);
+t_vector	limit_vector(t_vector v, t_data *data);
 float_t		vector_magsqsqrt(t_vector v);
 float_t		vector_magsq(t_vector v);
 float_t		constrain_float_t(float_t val, float_t min, float_t max);
+// QUAD TREE
+bool	insert_point(t_quadtree* qt, t_point p);
+void	subdivide_tree(t_quadtree *qt);
 // DELTAS
 void	defdel(t_delta *a, float_t ini, float_t fin);
 t_delta	revdel(t_delta a);

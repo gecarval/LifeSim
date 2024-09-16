@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 21:34:17 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/16 16:33:39 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	ft_set_params(t_data *data, int life_n, int radius, int part_n)
 
 void	ft_init_program(t_data *data)
 {
-	ft_set_params(data, 1000, 3, 4);
+	ft_set_params(data, 2000, 3, 6);
 	data->ini = mlx_init();
 	if (!data->ini)
 		display_error(data, "init error\n");
