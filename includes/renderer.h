@@ -40,8 +40,8 @@
 # define CYAN	0x00CCCC
 
 // QUAD TREE
-#define DEFAULT_CAPACITY 8
-#define MAX_DEPTH 8
+#define DEFAULT_CAPACITY 16
+#define MAX_DEPTH 32
 
 // STRUCTS
 typedef struct s_objinf
@@ -232,8 +232,32 @@ float_t		vector_magsqsqrt(t_vector v);
 float_t		vector_magsq(t_vector v);
 float_t		constrain_float_t(float_t val, float_t min, float_t max);
 // QUAD TREE
-bool	insert_point(t_quadtree* qt, t_point p);
-void	subdivide_tree(t_quadtree *qt);
+t_point		create_point(float_t x, float_t y, t_lifeform *life);
+float_t		sqdistfrompt(t_point *p, t_point *other);
+float_t		distfrompt(t_point *p, t_point *other);
+t_rectangle	create_rectangle(float_t x, float_t y, float_t w, float_t h);
+int		quadcontains(t_rectangle *r, t_point *p);
+int		quadintersects(t_rectangle *r, t_rectangle *range);
+t_rectangle	subdivide_rectangle(t_rectangle *r, const char *quadrant);
+float_t		xdistfromrec(t_rectangle *rect, t_point *point);
+float_t		ydistfromrec(t_rectangle *rect, t_point *point);
+float_t		sqdistfromrec(t_rectangle *rect, t_point *point);
+float_t		distfromrec(t_rectangle *rect, t_point *point);
+t_circle	create_circle(float_t x, float_t y, float_t r);
+int		circontains(t_circle *c, t_point *p);
+int		cirintersects(t_circle *c, t_rectangle *range);
+t_quadtree	*create_quadtree(t_rectangle boundary, unsigned int capacity, unsigned int depth);
+t_quadtree	*create_quadtree_fromglobals(float_t width, float_t height);
+t_quadtree	*create_quadtree_fromrectangle(t_rectangle rect, int capacity);
+t_quadtree	*create_quadtree_fromvalues(float_t x, float_t y, float_t w, float_t h, int capacity);
+t_quadtree	**get_all_children(t_quadtree *qt);
+t_quadtree	*get_one_children(t_quadtree *qt, const char *quadrant);
+void		subdivide_tree(t_quadtree *qt);
+bool		insert_point(t_quadtree *qt, t_point p);
+void		query_quadtree(t_quadtree *qt, t_rectangle *range, t_point *found[], int *found_count);
+void		display_quadtree_boundaries(t_quadtree *qt, t_data *data);
+void		print_quadtree(t_quadtree *qt);
+void		free_quadtree(t_quadtree *qt);
 // DELTAS
 void	defdel(t_delta *a, float_t ini, float_t fin);
 t_delta	revdel(t_delta a);

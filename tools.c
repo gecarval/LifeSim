@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/16 11:42:32 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/17 13:17:01 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	pixel_to_img(int x, int y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x < 0 || x >= data->winx) || (y < 0 || y >= data->winy))
+	if ((x < 0 || x > data->winx) || (y < 0 || y > data->winy))
 		return ;
 	pixel = data->img->img_px + y * data->img->llen + x * (data->img->bpp / 8);
 	*(int *)pixel = color;
@@ -90,7 +90,7 @@ void	pixel_to_img_float(float_t x, float_t y, t_data *data, int color)
 {
 	char	*pixel;
 
-	if ((x < 0 || x >= data->winx) || (y < 0 || y >= data->winy))
+	if ((x < 0 || x > data->winx) || (y < 0 || y > data->winy))
 		return ;
 	pixel = data->img->img_px + (int)y * data->img->llen + (int)x * (data->img->bpp / 8);
 	*(int *)pixel = color;
@@ -199,7 +199,7 @@ void	print_rules(t_data *data, float_t **rules)
 	int	j;
 
 	i = -1;
-	printf("	    RED        GREEN       BLUE     YELLOW         PINK       CYAN\n");
+	printf("	   RED     GREEN     BLUE    YELLOW    PINK     CYAN\n");
 	while (++i < data->part_num)
 	{
 		j = -1;
@@ -217,7 +217,7 @@ void	print_rules(t_data *data, float_t **rules)
 			printf("CYAN	");
 		printf("|");
 		while (++j < data->part_num)
-			printf(" %f |", rules[i][j]);
+			printf(" %6.2f |", rules[i][j]);
 		printf("\n");
 	}
 }
