@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 16:57:08 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/15 15:22:43 by anonymous        ###   ########.fr       */
+/*   Updated: 2024/09/18 21:14:52 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int	main(int argc, char **argv)
 	create_lsim(data);
 	data->anilsim = -1;
 	data->click_hold = 0;
+	data->show_tree = -1;
 	data->timing = 0;
 	water_mark(data);
 	mlx_mouse_hook(data->win, mouse_click, data);

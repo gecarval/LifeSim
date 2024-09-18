@@ -40,8 +40,8 @@
 # define CYAN	0x00CCCC
 
 // QUAD TREE
-#define DEFAULT_CAPACITY 16
-#define MAX_DEPTH 32
+#define DEFAULT_CAPACITY 4
+#define MAX_DEPTH 8
 
 // STRUCTS
 typedef struct s_objinf
@@ -139,6 +139,7 @@ typedef struct s_data
 	int			winy;
 	int			anilsim;
 	int			click_hold;
+	int			show_tree;
 	int			mposx;
 	int			mposy;
 	int			timing;
@@ -217,6 +218,9 @@ void	reset_rules(t_data *data, float_t **rules, int min, int max, int neg);
 void	reset_pos(t_data *data);
 void	ft_set_params(t_data *data, int life_n, int radius, int part_n);
 void	print_rules(t_data *data, float_t **rules);
+void	*process_physics(void *ptr);
+void	process_physics2(t_data *data);
+void	put_part_color(t_lifeform *tmp);
 // VECTORS
 t_vector	create_vector(float_t x, float_t y);
 t_vector	vectoradd(t_vector v1, t_vector v2);
@@ -235,6 +239,7 @@ float_t		constrain_float_t(float_t val, float_t min, float_t max);
 t_point		create_point(float_t x, float_t y, t_lifeform *life);
 float_t		sqdistfrompt(t_point *p, t_point *other);
 float_t		distfrompt(t_point *p, t_point *other);
+void		highlight_point(t_point pt, int size, t_data *data);
 t_rectangle	create_rectangle(float_t x, float_t y, float_t w, float_t h);
 int		quadcontains(t_rectangle *r, t_point *p);
 int		quadintersects(t_rectangle *r, t_rectangle *range);
@@ -255,7 +260,9 @@ t_quadtree	*get_one_children(t_quadtree *qt, const char *quadrant);
 void		subdivide_tree(t_quadtree *qt);
 bool		insert_point(t_quadtree *qt, t_point p);
 void		query_quadtree(t_quadtree *qt, t_rectangle *range, t_point *found[], int *found_count);
+int		report_query(t_quadtree *qt, t_data *data, t_rectangle range);
 void		display_quadtree_boundaries(t_quadtree *qt, t_data *data);
+void		draw_rectangle(t_rectangle r, t_data *data);
 void		print_quadtree(t_quadtree *qt);
 void		free_quadtree(t_quadtree *qt);
 // DELTAS

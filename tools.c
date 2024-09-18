@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/17 13:17:01 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/18 21:18:44 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,37 @@ int	mouse_click(int key, int x, int y, t_data *data)
 {
 	(void)x;
 	(void)y;
-	if (key == 1)
+	if (key == 1 && data->click_hold == 0)
 		data->click_hold = 1;
-	if (key == 3)
+	else
 		data->click_hold = 0;
 	return (0);
+}
+
+void	put_particle(int x, int y, t_data *data)
+{
+	t_lifeform	*tmp;
+
+	data->num_of_life++;
+	tmp = (t_lifeform *)malloc(sizeof(t_lifeform));
+	if (!tmp)
+		display_error(data, "life malloc error\n");
+	tmp->pos = create_vector(x, y);
+	tmp->prev_pos = create_vector(0, 0);
+	tmp->vel = create_vector(0, 0);
+	tmp->acel = create_vector(0, 0);
+	tmp->mass = 5;
+	tmp->r = data->radius;
+	tmp->id = data->num_of_life % data->part_num;
+	put_part_color(tmp);
+	tmp->next = data->lsim->life;
+	data->lsim->life = tmp;
 }
 
 int	mlx_anim(t_data *data)
 {
 	int	i;
-
+	
 	if (data->anilsim == 1)
 	{
 		life_sim(data);
@@ -43,6 +63,15 @@ int	mlx_anim(t_data *data)
 		i = 0;
 		while (i < data->timing)
 			i++;
+		if (data->click_hold == 1)
+		{
+			mlx_mouse_get_pos(data->ini, data->win, &data->mposx, &data->mposy);
+			if (data->mposx < 0 || data->mposx > data->winx)
+				data->click_hold = 0;
+			if (data->mposy < 0 || data->mposy > data->winy)
+				data->click_hold = 0;
+			put_particle(data->mposx, data->mposy, data);
+		}
 	}
 	return (0);
 }
@@ -60,6 +89,8 @@ int	mlx_cooked(int key, t_data *data)
 			data->timing -= 10000000;
 	if (key == 't')
 		reset_pos(data);
+	if (key == 'y')
+		data->show_tree *= -1;
 	if (key == 'r')
 	{
 		reset_rules(data, data->lsim->rules, 0.3, 1.0, 1);

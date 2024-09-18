@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:34:34 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/17 20:14:59 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/18 15:18:35 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,15 @@ float_t	distfrompt(t_point *p, t_point *other)
 	return (sqrtf(sqdistfrompt(p, other)));
 }
 
+void	highlight_point(t_point pt, int size, t_data *data)
+{
+	int	i;
+
+	i = abs(size);
+	while (--i >= 0)
+		circlebres((int)pt.x, (int)pt.y, i, data, 0xffffff);
+}
+
 // RECTANGLE HELPERS FUNCTIONS
 t_rectangle	create_rectangle(float_t x, float_t y, float_t w, float_t h)
 {
@@ -41,7 +50,7 @@ t_rectangle	create_rectangle(float_t x, float_t y, float_t w, float_t h)
 
 int	quadcontains(t_rectangle *r, t_point *p)
 {
-	return (r->left <= p->x && p->x <= r->right && r->top <= p->y && p->y <= r->bottom);
+	return (r->left < p->x && p->x < r->right && r->top < p->y && p->y < r->bottom);
 }
 
 int	quadintersects(t_rectangle *r, t_rectangle *range)
@@ -280,21 +289,24 @@ void	query_quadtree(t_quadtree *qt, t_rectangle *range, t_point *found[], int *f
 			found[(*found_count)++] = &qt->points[i];
 }
 
+int	report_query(t_quadtree *qt, t_data *data, t_rectangle range)
+{
+	t_point		*found[1000];
+	int		found_count;
+	int		i;
+
+	i = -1;
+	found_count = 0;
+	draw_rectangle(range, data);
+	query_quadtree(qt, &range, found, &found_count);
+	while (++i < found_count)
+		highlight_point(*found[i], found[i]->life->r, data);
+	return (found_count);
+}
+
 void	display_quadtree_boundaries(t_quadtree *qt, t_data *data)
 {
-	t_delta	dx;
-	t_delta	dy;
-
-	defdel(&dx, qt->boundary.left, qt->boundary.right);
-	defdel(&dy, qt->boundary.top, qt->boundary.top);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dy, qt->boundary.bottom, qt->boundary.bottom);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dx, qt->boundary.left, qt->boundary.left);
-	defdel(&dy, qt->boundary.top, qt->boundary.bottom);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dx, qt->boundary.right, qt->boundary.right);
-	draw_line(dx, dy, data, 0xFFFFFF);
+	draw_rectangle(qt->boundary, data);
 	if (qt->divided)
 	{
 		display_quadtree_boundaries(qt->northeast, data);

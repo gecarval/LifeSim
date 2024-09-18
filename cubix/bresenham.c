@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:53:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/11 16:21:47 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/18 15:05:23 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,4 +127,21 @@ void	draw_rectang(t_objinf a, t_data *data)
 		while (++j < a.sx / 2)
 			pixel_to_img((j + a.pox), (i + a.poy), data, a.color);
 	}
+}
+
+void	draw_rectangle(t_rectangle r, t_data *data)
+{
+	t_delta	dx;
+	t_delta	dy;
+
+	defdel(&dx, r.left, r.right);
+	defdel(&dy, r.top, r.top);
+	draw_line(dx, dy, data, 0xFFFFFF);
+	defdel(&dy, r.bottom, r.bottom);
+	draw_line(dx, dy, data, 0xFFFFFF);
+	defdel(&dy, r.top, r.bottom);
+	defdel(&dx, r.left, r.left);
+	draw_line(dx, dy, data, 0xFFFFFF);
+	defdel(&dx, r.right, r.right);
+	draw_line(dx, dy, data, 0xFFFFFF);
 }

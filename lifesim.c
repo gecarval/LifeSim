@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/17 21:11:15 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/18 21:19:04 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,14 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 
 	if (d < data->lsim->atrrules[mover->id][other->id])
 	{
+		data->lsim->atrrules[mover->id][other->id]++;
+		data->lsim->atrrules[mover->id][other->id]--;
 		g = 1;
 		force = (t_vector){0, 0};
 		force = vectorsub(mover->pos, other->pos);
 		force = mirror_forces(force, data);
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
-		//data->lsim->rules[mover->id][other->id]
-		strength = 1 * ((g * mover->mass * other->mass) / dist);
+		strength = data->lsim->rules[mover->id][other->id] * ((g * mover->mass * other->mass) / dist);
 		force = vector_setmagmult(force, strength);
 		applyforce(other, force);
 		// to other
@@ -101,13 +102,13 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		force = vectorsub(other->pos, mover->pos);
 		force = mirror_forces(force, data);
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
-		strength = 1 * ((g * other->mass * mover->mass) / dist);
+		strength = data->lsim->rules[mover->id][other->id] * ((g * other->mass * mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
 		applyforce(mover, force);
 	}
 }
 
-int	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
+void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 {
 	t_vector	force;
 	float_t		strength;
@@ -132,9 +133,7 @@ int	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		strength = -1 * ((g * other->mass * mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
 		applyforce(mover, force);
-		return (1);
 	}
-	return (0);
 }
 
 void	collision(t_lifeform *p1, t_lifeform *p2, float_t d)
@@ -194,13 +193,17 @@ void	limit_velocity(t_lifeform *mover, float_t limit)
 		mover->vel.x = limit;
 	if (mover->vel.y > limit)
 		mover->vel.y = limit;
+	if (mover->vel.x < -limit)
+		mover->vel.x = -limit;
+	if (mover->vel.y < -limit)
+		mover->vel.y = -limit;
 }
 
 void	update_position(t_lifeform *mover)
 {
 	mover->vel = vectoradd(mover->vel, mover->acel);
-	limit_velocity(mover, 0.6);
-	fricction(mover);
+	limit_velocity(mover, 30000);
+	//fricction(mover);
 	mover->pos = vectoradd(mover->pos, mover->vel);
 	mover->acel = create_vector(0, 0);
 }
@@ -230,50 +233,44 @@ void	apply_attraction_onquad(t_lifeform *m, t_quadtree* qtree, t_data *data)
 	float_t 	d;
 	int		i;
 
-	qdist = create_vector(qtree->boundary.x, qtree->boundary.y);
-	qdist = vectorsub(m->pos, qdist);
-	mirror_forces(qdist, data);
-	d = vector_magsqsqrt(qdist);
-	if (d < 250)
-	{
-		if (qtree->points != NULL)
-		{
-			i = -1;
-			while (++i < qtree->point_count)
-			{
-				p = qtree->points[i].life;
-				if (m != p)
-				{
-					qdist = vectorsub(m->pos, p->pos);
-					mirror_forces(qdist, data);
-					d = vector_magsqsqrt(qdist);
-					attraction(m, p, data, d);
-					repulsion(m, p, data, d);
-				}
-			}
-		}
-	}
-	else
-	{
-		if (qtree->points != NULL)
-		{
-			temp.pos.x = qtree->boundary.x;
-			temp.pos.y = qtree->boundary.y;
-			temp.mass = m->mass * qtree->point_count;
-			temp.id = 1;
-			qdist = vectorsub(m->pos, temp.pos);
-			mirror_forces(qdist, data);
-			d = vector_magsqsqrt(qdist);
-			attraction(m, &temp, data, d);
-			repulsion(m, &temp, data, d);
-		}
-	}
-	if (qtree->divided)
+	if (qtree->divided && qtree->points == NULL)
 	{
 		apply_attraction_onquad(m, qtree->northeast, data);
 		apply_attraction_onquad(m, qtree->northwest, data);
 		apply_attraction_onquad(m, qtree->southeast, data);
 		apply_attraction_onquad(m, qtree->southwest, data);
+		return ;
+	}
+	qdist = create_vector(qtree->boundary.x, qtree->boundary.y);
+	qdist = vectorsub(m->pos, qdist);
+	mirror_forces(qdist, data);
+	d = vector_magsqsqrt(qdist);
+	if (d < 17 * m->r)
+	{
+		i = -1;
+		while (++i < qtree->point_count)
+		{
+			p = qtree->points[i].life;
+			if (m != p)
+			{
+				qdist = vectorsub(m->pos, p->pos);
+				mirror_forces(qdist, data);
+				d = vector_magsqsqrt(qdist);
+				attraction(m, p, data, d);
+				repulsion(m, p, data, d);
+			}
+		}
+	}
+	else if (d < 80 * m->r)
+	{
+		temp.pos.x = qtree->boundary.x;
+		temp.pos.y = qtree->boundary.y;
+		temp.mass = m->mass * qtree->point_count;
+		temp.id = 1;
+		qdist = vectorsub(m->pos, temp.pos);
+		mirror_forces(qdist, data);
+		d = vector_magsqsqrt(qdist);
+		attraction(m, &temp, data, d);
 	}
 }
 
@@ -296,41 +293,20 @@ void	apply_collision_onquad(t_quadtree *qt, t_data *data)
 	i = -1;
 	while (++i < qt->point_count)
 	{
-		j = i + 1;
+		j = i;
 		while (++j < qt->point_count)
 		{
-			if (i != j)
-			{
-				tmp = (qt->points[i]).life;
-				tmp2 = (qt->points[j]).life;
-				dist = vectorsub(tmp2->pos, tmp->pos);
-				collision(tmp, tmp2, vector_magsqsqrt(dist));
-			}
+			tmp = (qt->points[i]).life;
+			tmp2 = (qt->points[j]).life;
+			dist = vectorsub(tmp2->pos, tmp->pos);
+			collision(tmp, tmp2, vector_magsqsqrt(dist));
 		}
 	}
-}
-
-void	draw_rectangle(t_rectangle r, t_data *data)
-{
-	t_delta	dx;
-	t_delta	dy;
-
-	defdel(&dx, r.left, r.right);
-	defdel(&dy, r.top, r.top);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dy, r.bottom, r.bottom);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dx, r.left, r.left);
-	defdel(&dy, r.top, r.bottom);
-	draw_line(dx, dy, data, 0xFFFFFF);
-	defdel(&dx, r.right, r.right);
-	draw_line(dx, dy, data, 0xFFFFFF);
 }
 
 void	process_physics_quad(t_data *data)
 {
 	int			i;
-	int			j;
 	t_point		pt;
 	t_lifeform	*tmp;
 	t_quadtree	*qt;
@@ -352,32 +328,56 @@ void	process_physics_quad(t_data *data)
 		tmp = tmp->next;
 	}
 	apply_collision_onquad(qt, data);
-	// QUERY
-	t_rectangle	range;
-	t_point		*found[1000];
-	int		found_count;
-	range = create_rectangle(450, 450, 180, 180);
-	draw_rectangle(range, data);
-	query_quadtree(qt, &range, found, &found_count);
-	i = -1;
-	while (++i < found_count)
-	{
-		j = 4;
-		while (--j >= 0)
-			circlebres((int)found[i]->x, (int)found[i]->y, j, data, 0xffffff);
-	}
-	printf("%d\n", found_count);
-	found_count = 0;
-	// END
 	display_quadtree_boundaries(qt, data);
+	/*t_rectangle	range;
+	int		fou;
+	range = create_rectangle(450, 450, 180, 180);
+	fou = report_query(qt, data, range);
+	printf("%d\n", fou);*/
+	free_quadtree(qt);
+}
+
+void	life_sim_pthread(t_data *data)
+{
+	process_velocity(data);
+	render_lifeform(data);
+	process_physics_quad(data);
+}
+
+void	process_collision_quad(t_data *data)
+{
+	int			i;
+	t_point		pt;
+	t_lifeform	*tmp;
+	t_quadtree	*qt;
+
+	i = -1;
+	tmp = data->lsim->life;
+	qt = create_quadtree_fromglobals(data->winx, data->winy);
+	while (++i < data->num_of_life)
+	{
+		pt = create_point(tmp->pos.x, tmp->pos.y, tmp);
+		insert_point(qt, pt);
+		tmp = tmp->next;
+	}
+	apply_collision_onquad(qt, data);
+	if (data->show_tree == 1)
+		display_quadtree_boundaries(qt, data);
 	free_quadtree(qt);
 }
 
 void	life_sim(t_data *data)
 {
+	pthread_t		processor;
+
 	render_lifeform(data);
 	process_velocity(data);
-	process_physics_quad(data);
+	process_collision_quad(data);
+	if (pthread_create(&processor, NULL, process_physics, data) != 0)
+		display_error(data, "failed thread\n");
+	process_physics2(data);
+	if (pthread_join(processor, NULL) != 0)
+		display_error(data, "failed thread\n");
 }
 
 void	process_physics2(t_data *data)
@@ -395,8 +395,8 @@ void	process_physics2(t_data *data)
 		tmp = tmp->next;
 	while (++i < data->num_of_life)
 	{
-		j = i + 1;
-		tmp2 = data->lsim->life;
+		j = i;
+		tmp2 = tmp->next;
 		while (++j < data->num_of_life)
 		{
 			if (tmp != tmp2)
@@ -405,7 +405,7 @@ void	process_physics2(t_data *data)
 				dist = mirror_forces(dist, data);
 				d = vector_magsqsqrt(dist);
 				attraction(tmp, tmp2, data, d);
-				d = repulsion(tmp, tmp2, data, d);
+				repulsion(tmp, tmp2, data, d);
 			}
 			tmp2 = tmp2->next;
 		}
@@ -426,10 +426,10 @@ void	*process_physics(void *ptr)
 	i = -1;
 	data = (t_data *)ptr;
 	tmp = data->lsim->life;
-	while (++i < data->num_of_life / 2)
+	while (++i <= data->num_of_life / 2)
 	{
-		j = i + 1;
-		tmp2 = data->lsim->life;
+		j = i;
+		tmp2 = tmp->next;
 		while (++j < data->num_of_life)
 		{
 			if (tmp != tmp2)
@@ -446,3 +446,72 @@ void	*process_physics(void *ptr)
 	}
 	return (NULL);
 }
+
+/*void	life_sim(t_data *data)
+{
+	pthread_t	processor[4];
+	int		i;
+
+	render_lifeform(data);
+	process_velocity(data);
+	process_collision_quad(data);
+	i = 0;
+	while (i < 4)
+	{
+		if (pthread_create(&processor[i], NULL, process_physics, data) != 0)
+			display_error(data, "failed thread\n");
+		i++;
+	}
+	process_physics(data);
+	i = 0;
+	while (i < 4)
+	{
+		if (pthread_join(processor[i], NULL) != 0)
+			display_error(data, "failed thread\n");
+		i++;
+	}
+}
+
+void	*process_physics(void *ptr)
+{
+	int			i;
+	int			j;
+	static int		rp;
+	pthread_mutex_t		lock = PTHREAD_MUTEX_INITIALIZER;
+	float_t		d;
+	t_vector	dist;
+	t_lifeform	*tmp;
+	t_lifeform	*tmp2;
+	t_data		*data;
+
+	pthread_mutex_lock(&lock);
+	i = 0;
+	data = (t_data *)ptr;
+	tmp = data->lsim->life;
+	while (i < (data->num_of_life / 4) * rp)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	rp++;
+	while (i < (data->num_of_life / 4) * rp)
+	{
+		j = i;
+		tmp2 = tmp->next;
+		while (++j < data->num_of_life)
+		{
+			dist = vectorsub(tmp2->pos, tmp->pos);
+			dist = mirror_forces(dist, data);
+			d = vector_magsqsqrt(dist);
+			attraction(tmp, tmp2, data, d);
+			repulsion(tmp, tmp2, data, d);
+			tmp2 = tmp2->next;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+	pthread_mutex_unlock(&lock);
+	if (rp == 4)
+		rp = 0;
+	return (NULL);
+}*/
