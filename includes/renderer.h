@@ -31,7 +31,7 @@
 # define WINX	1200
 # define WINY	800
 
-# define COLLISION_STEPS	1
+# define COLLISION_STEPS	4
 # define RED	0xCC0000
 # define GREEN	0x00CC00
 # define BLUE	0x0000CC

@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/16 14:05:50 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/19 16:26:19 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	malloc_rules(t_data *data)
 			sig = 1;
 			if (rand() % 2 == 0)
 				sig = -1;
-			data->lsim->rules[i][j] = rand_float_t(0.3, 1.0) * sig;
+			data->lsim->rules[i][j] = rand_float_t(0.3, 1.5) * sig;
 		}
 	}
 	data->lsim->rules[i] = NULL;
@@ -47,8 +47,8 @@ void	malloc_atrrules(t_data *data)
 	int	min;
 	int	max;
 
-	min = 25 * data->radius;
-	max = 80 * data->radius;
+	min = 30 * data->radius;
+	max = 60 * data->radius;
 	i = -1;
 	data->lsim->atrrules = (float_t **)malloc(sizeof(float_t *) * (data->part_num + 1));
 	if (!data->lsim->atrrules)
@@ -73,8 +73,8 @@ void	malloc_reprules(t_data *data)
 	int	min;
 	int	max;
 
-	min = 10 * data->radius;
-	max = 17 * data->radius;
+	min = 6 * data->radius;
+	max = 12 * data->radius;
 	i = -1;
 	data->lsim->reprules = (float_t **)malloc(sizeof(float_t *) * (data->part_num + 1));
 	if (!data->lsim->reprules)

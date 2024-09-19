@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:34:34 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/18 15:18:35 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:21:14 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ t_rectangle	create_rectangle(float_t x, float_t y, float_t w, float_t h)
 
 int	quadcontains(t_rectangle *r, t_point *p)
 {
-	return (r->left < p->x && p->x < r->right && r->top < p->y && p->y < r->bottom);
+	return (r->left <= p->x && p->x <= r->right && r->top <= p->y && p->y <= r->bottom);
 }
 
 int	quadintersects(t_rectangle *r, t_rectangle *range)
@@ -115,9 +115,9 @@ int	cirintersects(t_circle *c, t_rectangle *range)
 {
 	float_t	xdist;
 	float_t	ydist;
+	float_t	edges;
 	float_t	w;
 	float_t	h;
-	float_t	edges;
 
 	xdist = fabs(range->x - c->x);
 	ydist = fabs(range->y - c->y);
