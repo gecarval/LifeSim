@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/19 16:32:08 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/26 18:40:08 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,18 @@ void	ft_set_params(t_data *data, int life_n, int radius, int part_n)
 	data->num_of_life = life_n;
 	data->radius = radius;
 	data->part_num = part_n;
+	data->lsim->atrg = 1;
+	data->lsim->repg = 3;
+	data->lsim->minrul = 0.3;
+	data->lsim->maxrul = 1.5;
+	data->lsim->minrep = 6 * data->radius;
+	data->lsim->maxrep = 12 * data->radius;
+	data->lsim->minatr = 30 * data->radius;
+	data->lsim->maxatr = 60 * data->radius;
 }
 
 void	ft_init_program(t_data *data)
 {
-	ft_set_params(data, 2000, 2, 6);
 	data->ini = mlx_init();
 	if (!data->ini)
 		display_error(data, "init error\n");
@@ -81,6 +88,7 @@ void	ft_init_program(t_data *data)
 	data->lsim = (t_lifesim *)malloc(sizeof(t_lifesim));
 	if (!data->lsim)
 		display_error(data, "lifesim malloc error\n");
+	ft_set_params(data, 1000, 2, 6);
 	data->lsim->life = NULL;
 	data->img = (t_img *)malloc(sizeof(t_img));
 	if (!data->img)

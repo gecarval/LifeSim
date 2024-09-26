@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/19 16:26:17 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/26 17:43:10 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,9 @@ int	mlx_cooked(int key, t_data *data)
 		data->show_tree *= -1;
 	if (key == 'r')
 	{
-		reset_rules(data, data->lsim->rules, 0.3, 1.5, 1);
-		reset_rules(data, data->lsim->atrrules, 30 * data->radius, 60 * data->radius, -1);
-		reset_rules(data, data->lsim->reprules, 6 * data->radius, 12 * data->radius, -1);
+		reset_rules(data, data->lsim->rules, data->lsim->minrul, data->lsim->maxrul, 1);
+		reset_rules(data, data->lsim->atrrules, data->lsim->minatr, data->lsim->maxatr, -1);
+		reset_rules(data, data->lsim->reprules, data->lsim->minrep, data->lsim->maxrep, -1);
 	}
 	if (key == ' ')
 	{

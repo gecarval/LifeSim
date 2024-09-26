@@ -84,6 +84,14 @@ typedef struct s_lifesim
 	float_t		**rules;
 	float_t		**atrrules;
 	float_t		**reprules;
+	float_t		repg;
+	float_t		atrg;
+	float_t		minrul;
+	float_t		minrep;
+	float_t		minatr;
+	float_t		maxrul;
+	float_t		maxrep;
+	float_t		maxatr;
 }	t_lifesim;
 
 typedef struct s_img

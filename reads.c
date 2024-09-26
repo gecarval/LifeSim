@@ -6,7 +6,7 @@
 /*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/19 16:26:19 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/09/26 18:19:45 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	malloc_rules(t_data *data)
 			sig = 1;
 			if (rand() % 2 == 0)
 				sig = -1;
-			data->lsim->rules[i][j] = rand_float_t(0.3, 1.5) * sig;
+			data->lsim->rules[i][j] = rand_float_t(data->lsim->minrul, data->lsim->maxrul) * sig;
 		}
 	}
 	data->lsim->rules[i] = NULL;
@@ -47,8 +47,8 @@ void	malloc_atrrules(t_data *data)
 	int	min;
 	int	max;
 
-	min = 30 * data->radius;
-	max = 60 * data->radius;
+	min = data->lsim->minatr;
+	max = data->lsim->maxatr;
 	i = -1;
 	data->lsim->atrrules = (float_t **)malloc(sizeof(float_t *) * (data->part_num + 1));
 	if (!data->lsim->atrrules)
@@ -73,8 +73,8 @@ void	malloc_reprules(t_data *data)
 	int	min;
 	int	max;
 
-	min = 6 * data->radius;
-	max = 12 * data->radius;
+	min = data->lsim->minrep;
+	max = data->lsim->maxrep;
 	i = -1;
 	data->lsim->reprules = (float_t **)malloc(sizeof(float_t *) * (data->part_num + 1));
 	if (!data->lsim->reprules)
@@ -132,6 +132,8 @@ void	create_lsim(t_data *data)
 		tmp->r = data->radius;
 		tmp->id = i % data->part_num;
 		put_part_color(tmp);
+		if (i == 0)
+			tmp->color = 0xFFFFFF;
 		if (i + 1 == data->num_of_life)
 			break ;
 		tmp->next = (t_lifeform *)malloc(sizeof(t_lifeform));
