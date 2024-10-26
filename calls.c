@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calls.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
+/*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/26 18:40:08 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/10/26 20:07:33 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void	free_life(t_lifeform *life, t_data *data)
 
 int	exit_data(t_data *data, int fd)
 {
+	if (data != NULL && data->processor != NULL)
+		free(data->processor);
 	if (data != NULL && data->img != NULL && data->img->img_ptr != NULL)
 		mlx_destroy_image(data->ini, data->img->img_ptr);
 	if (data != NULL && data->img != NULL)
@@ -100,4 +102,7 @@ void	ft_init_program(t_data *data)
 			&data->img->llen, &data->img->end);
 	if (!data->img->img_px)
 		display_error(data, "img data error\n");
+	data->processor = (t_processor *)malloc(sizeof(t_processor) * MAX_THREADS);
+	if (!data->processor)
+		display_error(data, "processor malloc error\n");
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lifesim.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anonymous <anonymous@student.42.fr>        +#+  +:+       +#+        */
+/*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/09/26 18:20:29 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/10/26 20:57:20 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ void	applyforce(t_lifeform *mover, t_vector force)
 	mover->acel = vectoradd(mover->acel, f);
 }
 
-void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
+void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data,
+		float_t d)
 {
 	t_vector	force;
 	float_t		strength;
@@ -90,20 +91,26 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		force = vectorsub(mover->pos, other->pos);
 		force = mirror_forces(force, data);
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
-		strength = data->lsim->rules[mover->id][other->id] * ((data->lsim->atrg * mover->mass) / dist);
+		strength = data->lsim->rules[mover->id][other->id] * ((data->lsim->atrg
+					* mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
+		pthread_mutex_lock(&data->life_mutex);
 		applyforce(other, force);
+		pthread_mutex_unlock(&data->life_mutex);
 	}
-		// to other
+	// to other
 	if (d < data->lsim->atrrules[other->id][mover->id])
 	{
 		force = (t_vector){0, 0};
 		force = vectorsub(other->pos, mover->pos);
 		force = mirror_forces(force, data);
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
-		strength = data->lsim->rules[other->id][mover->id] * ((data->lsim->atrg * other->mass) / dist);
+		strength = data->lsim->rules[other->id][mover->id] * ((data->lsim->atrg
+					* other->mass) / dist);
 		force = vector_setmagmult(force, strength);
+		pthread_mutex_lock(&data->life_mutex);
 		applyforce(mover, force);
+		pthread_mutex_unlock(&data->life_mutex);
 	}
 }
 
@@ -121,7 +128,9 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((data->lsim->repg * mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
+		pthread_mutex_lock(&data->life_mutex);
 		applyforce(other, force);
+		pthread_mutex_unlock(&data->life_mutex);
 	}
 	if (d < data->lsim->reprules[other->id][mover->id])
 	{
@@ -131,7 +140,9 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((data->lsim->repg * other->mass) / dist);
 		force = vector_setmagmult(force, strength);
+		pthread_mutex_lock(&data->life_mutex);
 		applyforce(mover, force);
+		pthread_mutex_unlock(&data->life_mutex);
 	}
 }
 
@@ -225,8 +236,8 @@ void	process_velocity(t_data *data)
 
 void	apply_collision_onquad(t_quadtree *qt, t_data *data)
 {
-	int	i;
-	int	j;
+	int			i;
+	int			j;
 	t_lifeform	*tmp;
 	t_lifeform	*tmp2;
 	t_vector	dist;
@@ -285,16 +296,31 @@ void	process_collision_quad(t_data *data)
 
 void	life_sim(t_data *data)
 {
-	pthread_t		processor;
+	int	i;
 
 	render_lifeform(data);
 	process_velocity(data);
 	process_collision_quad(data);
-	if (pthread_create(&processor, NULL, process_physics, data) != 0)
-		display_error(data, "failed thread\n");
-	process_physics2(data);
-	if (pthread_join(processor, NULL) != 0)
-		display_error(data, "failed thread\n");
+	i = 0;
+	pthread_mutex_init(&data->life_mutex, NULL);
+	while (i < MAX_THREADS)
+	{
+		data->processor[i].data = data;
+		data->processor[i].start = i * (data->num_of_life / MAX_THREADS);
+		data->processor[i].end = (i + 1) * (data->num_of_life / MAX_THREADS);
+		if (pthread_create(&data->processor[i].thread, NULL, process_physics,
+				&data->processor[i]) != 0)
+			display_error(data, "failed thread\n");
+		i++;
+	}
+	i = 0;
+	while (i < MAX_THREADS)
+	{
+		if (pthread_join(data->processor[i].thread, NULL) != 0)
+			display_error(data, "failed thread\n");
+		i++;
+	}
+	pthread_mutex_destroy(&data->life_mutex);
 }
 
 void	*process_physics(void *ptr)
@@ -305,130 +331,31 @@ void	*process_physics(void *ptr)
 	t_vector	dist;
 	t_lifeform	*tmp;
 	t_lifeform	*tmp2;
-	t_data		*data;
+	t_processor	*processor;
 
-	i = -1;
-	data = (t_data *)ptr;
-	tmp = data->lsim->life;
-	while (++i <= data->num_of_life / 2)
-	{
-		j = i;
-		tmp2 = tmp->next;
-		while (++j < data->num_of_life)
-		{
-			if (tmp != tmp2)
-			{
-				dist = vectorsub(tmp2->pos, tmp->pos);
-				dist = mirror_forces(dist, data);
-				d = vector_magsqsqrt(dist);
-				attraction(tmp, tmp2, data, d);
-				repulsion(tmp, tmp2, data, d);
-			}
-			tmp2 = tmp2->next;
-		}
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
-void	process_physics2(t_data *data)
-{
-	int			i;
-	int			j;
-	float_t		d;
-	t_vector	dist;
-	t_lifeform	*tmp;
-	t_lifeform	*tmp2;
-
-	i = -1;
-	tmp = data->lsim->life;
-	while (++i < data->num_of_life / 2)
-		tmp = tmp->next;
-	while (++i < data->num_of_life)
-	{
-		j = i;
-		tmp2 = tmp->next;
-		while (++j < data->num_of_life)
-		{
-			if (tmp != tmp2)
-			{
-				dist = vectorsub(tmp2->pos, tmp->pos);
-				dist = mirror_forces(dist, data);
-				d = vector_magsqsqrt(dist);
-				attraction(tmp, tmp2, data, d);
-				repulsion(tmp, tmp2, data, d);
-			}
-			tmp2 = tmp2->next;
-		}
-		tmp = tmp->next;
-	}
-}
-
-/*void	life_sim(t_data *data)
-{
-	pthread_t	processor[4];
-	int		i;
-
-	render_lifeform(data);
-	process_velocity(data);
-	process_collision_quad(data);
 	i = 0;
-	while (i < 4)
-	{
-		if (pthread_create(&processor[i], NULL, process_physics, data) != 0)
-			display_error(data, "failed thread\n");
-		i++;
-	}
-	process_physics(data);
-	i = 0;
-	while (i < 4)
-	{
-		if (pthread_join(processor[i], NULL) != 0)
-			display_error(data, "failed thread\n");
-		i++;
-	}
-}
-
-void	*process_physics(void *ptr)
-{
-	int			i;
-	int			j;
-	static int		rp;
-	pthread_mutex_t		lock = PTHREAD_MUTEX_INITIALIZER;
-	float_t		d;
-	t_vector	dist;
-	t_lifeform	*tmp;
-	t_lifeform	*tmp2;
-	t_data		*data;
-
-	pthread_mutex_lock(&lock);
-	i = 0;
-	data = (t_data *)ptr;
-	tmp = data->lsim->life;
-	while (i < (data->num_of_life / 4) * rp)
+	processor = (t_processor *)ptr;
+	tmp = processor->data->lsim->life;
+	while (i < processor->start)
 	{
 		tmp = tmp->next;
 		i++;
 	}
-	rp++;
-	while (i < (data->num_of_life / 4) * rp)
+	while (i < processor->end)
 	{
 		j = i;
 		tmp2 = tmp->next;
-		while (++j < data->num_of_life)
+		while (++j < processor->data->num_of_life)
 		{
 			dist = vectorsub(tmp2->pos, tmp->pos);
-			dist = mirror_forces(dist, data);
+			dist = mirror_forces(dist, processor->data);
 			d = vector_magsqsqrt(dist);
-			attraction(tmp, tmp2, data, d);
-			repulsion(tmp, tmp2, data, d);
+			attraction(tmp, tmp2, processor->data, d);
+			repulsion(tmp, tmp2, processor->data, d);
 			tmp2 = tmp2->next;
 		}
 		tmp = tmp->next;
 		i++;
 	}
-	pthread_mutex_unlock(&lock);
-	if (rp == 4)
-		rp = 0;
 	return (NULL);
-}*/
+}
