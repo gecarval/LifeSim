@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:37:31 by gecarval          #+#    #+#             */
-/*   Updated: 2024/10/26 20:57:40 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/11/08 08:55:21 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ void	create_lsim(t_data *data)
 	tmp = data->lsim->life;
 	while (++i < data->num_of_life)
 	{
+		pthread_mutex_init(&tmp->life_mutex, NULL);
 		tmp->pos = create_vector(rand() % data->winx, rand() % data->winy);
 		tmp->prev_pos = create_vector(0, 0);
 		tmp->vel = create_vector(0, 0);

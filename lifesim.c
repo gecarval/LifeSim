@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 12:18:49 by gecarval          #+#    #+#             */
-/*   Updated: 2024/10/26 20:57:20 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:09:58 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,11 @@ void	render_lifeform(t_data *data)
 	while (++i < data->num_of_life)
 	{
 		j = tmp->r;
+		if (j == 1)
+		{
+			pixel_to_img((int)tmp->pos.x, (int)tmp->pos.y, data, tmp->color);
+			j--;
+		}
 		while (--j >= 0)
 			circlebres((int)tmp->pos.x, (int)tmp->pos.y, j, data, tmp->color);
 		tmp = tmp->next;
@@ -94,9 +99,9 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data,
 		strength = data->lsim->rules[mover->id][other->id] * ((data->lsim->atrg
 					* mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
-		pthread_mutex_lock(&data->life_mutex);
+		pthread_mutex_lock(&other->life_mutex);
 		applyforce(other, force);
-		pthread_mutex_unlock(&data->life_mutex);
+		pthread_mutex_unlock(&other->life_mutex);
 	}
 	// to other
 	if (d < data->lsim->atrrules[other->id][mover->id])
@@ -108,9 +113,9 @@ void	attraction(t_lifeform *mover, t_lifeform *other, t_data *data,
 		strength = data->lsim->rules[other->id][mover->id] * ((data->lsim->atrg
 					* other->mass) / dist);
 		force = vector_setmagmult(force, strength);
-		pthread_mutex_lock(&data->life_mutex);
+		pthread_mutex_lock(&mover->life_mutex);
 		applyforce(mover, force);
-		pthread_mutex_unlock(&data->life_mutex);
+		pthread_mutex_unlock(&mover->life_mutex);
 	}
 }
 
@@ -128,9 +133,9 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((data->lsim->repg * mover->mass) / dist);
 		force = vector_setmagmult(force, strength);
-		pthread_mutex_lock(&data->life_mutex);
+		pthread_mutex_lock(&other->life_mutex);
 		applyforce(other, force);
-		pthread_mutex_unlock(&data->life_mutex);
+		pthread_mutex_unlock(&other->life_mutex);
 	}
 	if (d < data->lsim->reprules[other->id][mover->id])
 	{
@@ -140,9 +145,9 @@ void	repulsion(t_lifeform *mover, t_lifeform *other, t_data *data, float_t d)
 		dist = constrain_float_t(vector_magsq(force), 100, 1000);
 		strength = -1 * ((data->lsim->repg * other->mass) / dist);
 		force = vector_setmagmult(force, strength);
-		pthread_mutex_lock(&data->life_mutex);
+		pthread_mutex_lock(&mover->life_mutex);
 		applyforce(mover, force);
-		pthread_mutex_unlock(&data->life_mutex);
+		pthread_mutex_unlock(&mover->life_mutex);
 	}
 }
 
@@ -302,7 +307,6 @@ void	life_sim(t_data *data)
 	process_velocity(data);
 	process_collision_quad(data);
 	i = 0;
-	pthread_mutex_init(&data->life_mutex, NULL);
 	while (i < MAX_THREADS)
 	{
 		data->processor[i].data = data;
@@ -320,7 +324,6 @@ void	life_sim(t_data *data)
 			display_error(data, "failed thread\n");
 		i++;
 	}
-	pthread_mutex_destroy(&data->life_mutex);
 }
 
 void	*process_physics(void *ptr)

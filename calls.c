@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 20:32:15 by gecarval          #+#    #+#             */
-/*   Updated: 2024/10/26 20:07:33 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:11:14 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	free_life(t_lifeform *life, t_data *data)
 	{
 		tmp = life;
 		life = life->next;
+		pthread_mutex_destroy(&tmp->life_mutex);
 		free(tmp);
 	}
 }
@@ -90,7 +91,7 @@ void	ft_init_program(t_data *data)
 	data->lsim = (t_lifesim *)malloc(sizeof(t_lifesim));
 	if (!data->lsim)
 		display_error(data, "lifesim malloc error\n");
-	ft_set_params(data, 1000, 2, 6);
+	ft_set_params(data, 2000, 1, 6);
 	data->lsim->life = NULL;
 	data->img = (t_img *)malloc(sizeof(t_img));
 	if (!data->img)

@@ -6,7 +6,7 @@
 /*   By: gecarval <gecarval@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 17:38:51 by gecarval          #+#    #+#             */
-/*   Updated: 2024/10/26 20:57:37 by gecarval         ###   ########.fr       */
+/*   Updated: 2024/11/08 08:56:00 by gecarval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	put_particle(int x, int y, t_data *data)
 	tmp = (t_lifeform *)malloc(sizeof(t_lifeform));
 	if (!tmp)
 		display_error(data, "life malloc error\n");
+	pthread_mutex_init(&tmp->life_mutex, NULL);
+	tmp->next = NULL;
 	tmp->pos = create_vector(x, y);
 	tmp->prev_pos = create_vector(0, 0);
 	tmp->vel = create_vector(0, 0);

@@ -27,7 +27,7 @@
 # include <unistd.h>
 
 // MACROS
-# define MAX_THREADS 4
+# define MAX_THREADS 20
 
 // WINDOW MACROS
 # define ESC 65307
@@ -72,6 +72,7 @@ typedef struct s_vector
 
 typedef struct s_lifeform
 {
+	pthread_mutex_t			life_mutex;
 	t_vector				prev_pos;
 	t_vector				pos;
 	t_vector				vel;
@@ -145,7 +146,6 @@ typedef struct s_data
 	t_menu					*menu;
 	t_lifesim				*lsim;
 	t_processor				*processor;
-	pthread_mutex_t			life_mutex;
 	pthread_mutex_t			data_mutex;
 	int						num_of_life;
 	int						part_num;
